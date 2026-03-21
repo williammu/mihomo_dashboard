@@ -461,7 +461,20 @@
 
         // Test latency for a specific proxy
         async function testProxyLatency(proxyName, groupElement) {
-            const latencyEl = groupElement.querySelector(`[data-proxy="${encodeURIComponent(proxyName)}"] .proxy-latency`);
+            // Find the proxy item by matching the decoded name
+            const proxyItems = groupElement.querySelectorAll('.proxy-item');
+            let latencyEl = null;
+            let proxyItem = null;
+            
+            for (const item of proxyItems) {
+                const itemProxyName = decodeURIComponent(item.getAttribute('data-proxy'));
+                if (itemProxyName === proxyName) {
+                    proxyItem = item;
+                    latencyEl = item.querySelector('.proxy-latency');
+                    break;
+                }
+            }
+            
             if (latencyEl) {
                 latencyEl.textContent = 'Testing...';
                 latencyEl.className = 'proxy-latency testing';
@@ -494,7 +507,16 @@
             const group = groups[groupName];
             if (!group || !group.all) return;
 
-            const groupEl = document.querySelector(`[data-group-name="${encodeURIComponent(groupName)}"]`);
+            // Find the group element by matching decoded name
+            const allGroupEls = document.querySelectorAll('.proxy-group');
+            let groupEl = null;
+            for (const el of allGroupEls) {
+                const elGroupName = decodeURIComponent(el.getAttribute('data-group-name'));
+                if (elGroupName === groupName) {
+                    groupEl = el;
+                    break;
+                }
+            }
             if (!groupEl) return;
 
             // Test each proxy sequentially to avoid overwhelming the API
@@ -582,7 +604,7 @@
                                         <div class="proxy-actions">
                                             <span class="proxy-latency testing">-</span>
                                             <button class="small" onclick="selectProxy('${groupName.replace(/'/g, "\\'")}', '${proxyName.replace(/'/g, "\\'")}')">Select</button>
-                                            <button class="small" onclick="testProxyLatency('${proxyName.replace(/'/g, "\\'")}', this.closest('.proxy-group'))">Test</button>
+                                            <button class="small" onclick="event.stopPropagation(); testProxyLatency('${proxyName.replace(/'/g, "\\'")}', this.closest('.proxy-group'))">Test</button>
                                         </div>
                                     </div>
                                 `).join('')}
