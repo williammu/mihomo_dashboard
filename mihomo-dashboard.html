@@ -363,6 +363,9 @@
         // Cache for latency results: { "proxyName": { delay: number, class: string } }
         const latencyCache = {};
         
+        // Flag to prevent auto-refresh during testing
+        let isTestingLatency = false;
+        
         // Get API base URL from localStorage or use default
         function getApiBase() {
             return localStorage.getItem('mihomo_api_url') || DEFAULT_API_BASE;
@@ -526,7 +529,7 @@
         }
 
         // Test all proxies in a group
-        async function testGroupLatency(groupName) {
+        async function testGroupLatency(groupName, skipSetTesting = false) {
             const groups = await getProxyGroups();
             const group = groups[groupName];
             if (!group || !group.all) return;
@@ -543,8 +546,10 @@
             }
             if (!groupEl) return;
 
-            // Set all proxies to testing state first
-            setGroupTestingState(groupEl);
+            // Set all proxies to testing state first (only if not already set by caller)
+            if (!skipSetTesting) {
+                setGroupTestingState(groupEl);
+            }
 
             // Test each proxy sequentially to avoid overwhelming the API
             for (const proxyName of group.all) {
@@ -568,6 +573,7 @@
             const btn = document.querySelector('.test-all-btn');
             btn.disabled = true;
             btn.textContent = 'Testing...';
+            isTestingLatency = true; // Prevent auto-refresh
 
             try {
                 const groups = await getProxyGroups();
@@ -579,13 +585,14 @@
                 setAllTestingState();
 
                 for (const groupName of groupNames) {
-                    await testGroupLatency(groupName);
+                    await testGroupLatency(groupName, true); // skipSetTesting = true
                 }
 
                 showMessage('proxies-message', '✅ All latency tests completed');
             } catch (error) {
                 showMessage('proxies-message', `❌ Error: ${error.message}`, true);
             } finally {
+                isTestingLatency = false; // Re-enable auto-refresh
                 btn.disabled = false;
                 btn.textContent = '🚀 Test All Latency';
             }
@@ -766,8 +773,10 @@
                     }).join('');
                 }
 
-                // Refresh proxy groups
-                await renderProxyGroups();
+                // Refresh proxy groups (skip if testing latency)
+                if (!isTestingLatency) {
+                    await renderProxyGroups();
+                }
 
             } catch (error) {
                 document.getElementById('status-content').innerHTML = `
