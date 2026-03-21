@@ -357,6 +357,9 @@
         // Default API base URL
         const DEFAULT_API_BASE = 'http://127.0.0.1:9090';
         
+        // Cache for latency results: { "proxyName": { delay: number, class: string } }
+        const latencyCache = {};
+        
         // Get API base URL from localStorage or use default
         function getApiBase() {
             return localStorage.getItem('mihomo_api_url') || DEFAULT_API_BASE;
@@ -493,11 +496,16 @@
                 if (delay > 300) latencyClass = 'medium';
                 if (delay > 800) latencyClass = 'bad';
                 
+                // Cache the result
+                latencyCache[proxyName] = { delay, class: latencyClass };
+                
                 if (latencyEl) {
                     latencyEl.textContent = `${delay}ms`;
                     latencyEl.className = `proxy-latency ${latencyClass}`;
                 }
             } catch (error) {
+                // Cache the error state
+                latencyCache[proxyName] = { delay: 'Error', class: 'bad' };
                 if (latencyEl) {
                     latencyEl.textContent = 'Error';
                     latencyEl.className = 'proxy-latency bad';
@@ -602,16 +610,20 @@
                                 <button class="small" onclick="testGroupLatency('${groupName.replace(/'/g, "\\'")}')">🧪 Test</button>
                             </div>
                             <div class="proxy-list">
-                                ${allProxies.map(proxyName => `
+                                ${allProxies.map(proxyName => {
+                                    const cached = latencyCache[proxyName];
+                                    const latencyText = cached ? `${cached.delay}ms` : '-';
+                                    const latencyClass = cached ? cached.class : 'testing';
+                                    return `
                                     <div class="proxy-item ${group.now === proxyName ? 'selected' : ''}" data-proxy="${encodeURIComponent(proxyName)}">
                                         <span class="proxy-name">${proxyName}</span>
                                         <div class="proxy-actions">
-                                            <span class="proxy-latency testing">-</span>
+                                            <span class="proxy-latency ${latencyClass}">${latencyText}</span>
                                             <button class="small" onclick="selectProxy('${groupName.replace(/'/g, "\\'")}', '${proxyName.replace(/'/g, "\\'")}')">Select</button>
                                             <button class="small" onclick="event.stopPropagation(); testProxyLatency('${proxyName.replace(/'/g, "\\'")}', this.closest('.proxy-group'))">Test</button>
                                         </div>
                                     </div>
-                                `).join('')}
+                                `}).join('')}
                             </div>
                         </div>
                     `;
