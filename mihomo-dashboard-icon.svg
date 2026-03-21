@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#16213e;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="cyanGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4aa;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00f0ff;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="glowGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4aa;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#00d4aa;stop-opacity:0" />
+    </linearGradient>
+    
+    <!-- Glow filter -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Stronger glow for accent -->
+    <filter id="strongGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="512" height="512" rx="64" fill="url(#bgGradient)"/>
+  
+  <!-- Outer ring with gradient -->
+  <circle cx="256" cy="256" r="200" fill="none" stroke="url(#cyanGradient)" stroke-width="4" opacity="0.3"/>
+  <circle cx="256" cy="256" r="190" fill="none" stroke="url(#cyanGradient)" stroke-width="2" opacity="0.5"/>
+  
+  <!-- Hexagon shape (representing network/mesh) -->
+  <polygon points="256,96 346,148 346,252 256,304 166,252 166,148" 
+           fill="none" stroke="url(#cyanGradient)" stroke-width="6" 
+           filter="url(#glow)"/>
+  
+  <!-- Inner hexagon -->
+  <polygon points="256,120 322,158 322,242 256,280 190,242 190,158" 
+           fill="#0f3460" stroke="#00d4aa" stroke-width="3" opacity="0.8"/>
+  
+  <!-- Dashboard grid lines -->
+  <line x1="166" y1="200" x2="346" y2="200" stroke="#00d4aa" stroke-width="1" opacity="0.4"/>
+  <line x1="166" y1="252" x2="346" y2="252" stroke="#00d4aa" stroke-width="1" opacity="0.4"/>
+  <line x1="211" y1="148" x2="211" y2="304" stroke="#00d4aa" stroke-width="1" opacity="0.4"/>
+  <line x1="301" y1="148" x2="301" y2="304" stroke="#00d4aa" stroke-width="1" opacity="0.4"/>
+  
+  <!-- Central "M" letter for Mihomo -->
+  <text x="256" y="245" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" 
+        font-size="72" font-weight="bold" fill="#ffffff" text-anchor="middle" 
+        filter="url(#strongGlow)">M</text>
+  
+  <!-- Terminal/command prompt symbol -->
+  <g transform="translate(180, 340)">
+    <!-- Terminal window -->
+    <rect x="0" y="0" width="152" height="80" rx="8" fill="#0f3460" stroke="#00d4aa" stroke-width="2"/>
+    <!-- Window title bar -->
+    <rect x="0" y="0" width="152" height="20" rx="8" fill="#00d4aa" opacity="0.2"/>
+    <rect x="0" y="8" width="152" height="12" fill="#00d4aa" opacity="0.2"/>
+    <!-- Window buttons -->
+    <circle cx="16" cy="10" r="4" fill="#e94560"/>
+    <circle cx="30" cy="10" r="4" fill="#f0a500"/>
+    <circle cx="44" cy="10" r="4" fill="#00d4aa"/>
+    <!-- Prompt symbol -->
+    <text x="12" y="52" font-family="monospace" font-size="24" fill="#00d4aa" font-weight="bold">&gt;_</text>
+    <!-- Cursor -->
+    <rect x="58" y="36" width="10" height="20" fill="#00d4aa" opacity="0.8">
+      <animate attributeName="opacity" values="0.8;0;0.8" dur="1s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+  
+  <!-- Connection nodes (representing proxy connections) -->
+  <circle cx="120" cy="150" r="8" fill="#00d4aa" filter="url(#glow)">
+    <animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="392" cy="150" r="8" fill="#00d4aa" filter="url(#glow)">
+    <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="120" cy="300" r="8" fill="#00d4aa" filter="url(#glow)">
+    <animate attributeName="opacity" values="0.5;1;0.5" dur="1.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="392" cy="300" r="8" fill="#00d4aa" filter="url(#glow)">
+    <animate attributeName="opacity" values="1;0.5;1" dur="1.5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Connection lines -->
+  <line x1="128" y1="150" x2="166" y2="148" stroke="#00d4aa" stroke-width="2" opacity="0.6"/>
+  <line x1="346" y1="148" x2="384" y2="150" stroke="#00d4aa" stroke-width="2" opacity="0.6"/>
+  <line x1="128" y1="300" x2="166" y2="304" stroke="#00d4aa" stroke-width="2" opacity="0.6"/>
+  <line x1="346" y1="304" x2="384" y2="300" stroke="#00d4aa" stroke-width="2" opacity="0.6"/>
+  
+  <!-- Data flow indicators -->
+  <circle cx="147" cy="149" r="3" fill="#ffffff">
+    <animate attributeName="cx" values="128;166" dur="1s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="365" cy="149" r="3" fill="#ffffff">
+    <animate attributeName="cx" values="384;346" dur="1.2s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Corner accents -->
+  <path d="M 40 80 L 40 40 L 80 40" fill="none" stroke="#00d4aa" stroke-width="4" stroke-linecap="round"/>
+  <path d="M 432 40 L 472 40 L 472 80" fill="none" stroke="#00d4aa" stroke-width="4" stroke-linecap="round"/>
+  <path d="M 40 432 L 40 472 L 80 472" fill="none" stroke="#00d4aa" stroke-width="4" stroke-linecap="round"/>
+  <path d="M 432 472 L 472 472 L 472 432" fill="none" stroke="#00d4aa" stroke-width="4" stroke-linecap="round"/>
+  
+  <!-- Status indicator dots at bottom -->
+  <circle cx="200" cy="460" r="6" fill="#00d4aa" opacity="0.8">
+    <animate attributeName="opacity" values="0.8;0.3;0.8" dur="0.8s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="220" cy="460" r="6" fill="#00d4aa" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;0.2;0.6" dur="0.8s" begin="0.2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="240" cy="460" r="6" fill="#00d4aa" opacity="0.4">
+    <animate attributeName="opacity" values="0.4;0.1;0.4" dur="0.8s" begin="0.4s" repeatCount="indefinite"/>
+  </circle>
+  <text x="270" y="466" font-family="sans-serif" font-size="14" fill="#888">CONNECTED</text>
+</svg>
