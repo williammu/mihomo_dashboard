@@ -81,8 +81,9 @@
             cursor: not-allowed;
         }
         button.small {
-            padding: 5px 12px;
-            font-size: 12px;
+            padding: 4px 10px;
+            font-size: 11px;
+            white-space: nowrap;
         }
         .message {
             margin-top: 10px;
@@ -186,20 +187,21 @@
             font-size: 12px;
         }
         .proxy-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
         .proxy-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
             background: #16213e;
-            padding: 8px 12px;
+            padding: 10px 14px;
             border-radius: 6px;
             font-size: 13px;
             border: 2px solid transparent;
             transition: all 0.2s;
+            min-height: 44px;
         }
         .proxy-item:hover {
             border-color: #00d4aa;
@@ -213,9 +215,9 @@
         }
         .proxy-name {
             flex: 1;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            word-break: break-word;
+            line-height: 1.4;
+            padding-right: 10px;
         }
         .proxy-latency {
             font-size: 12px;
@@ -244,6 +246,8 @@
         .proxy-actions {
             display: flex;
             gap: 5px;
+            flex-shrink: 0;
+            align-items: center;
         }
         .test-all-btn {
             margin-bottom: 15px;
