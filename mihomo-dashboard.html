@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mihomo Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #00d4aa;
+        }
+        .card {
+            background: #16213e;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .card h2 {
+            color: #00d4aa;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .status-label {
+            color: #888;
+            min-width: 120px;
+        }
+        .status-value {
+            background: #0f3460;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            color: #00d4aa;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        button {
+            background: #0f3460;
+            color: #fff;
+            border: 2px solid #00d4aa;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #00d4aa;
+            color: #1a1a2e;
+        }
+        button.active {
+            background: #00d4aa;
+            color: #1a1a2e;
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        button.small {
+            padding: 5px 12px;
+            font-size: 12px;
+        }
+        .message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            display: none;
+        }
+        .message.success {
+            background: #00d4aa33;
+            border: 1px solid #00d4aa;
+            display: block;
+        }
+        .message.error {
+            background: #e9456033;
+            border: 1px solid #e94560;
+            display: block;
+        }
+        .connections {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .connection-item {
+            background: #0f3460;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        .connection-item .host {
+            color: #00d4aa;
+            font-weight: bold;
+        }
+        .connection-item .chain {
+            color: #888;
+            margin-top: 5px;
+        }
+        .loading {
+            text-align: center;
+            color: #888;
+            padding: 20px;
+        }
+        .refresh-btn {
+            float: right;
+            padding: 5px 15px;
+            font-size: 12px;
+        }
+        /* Settings styles */
+        .settings-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .settings-row label {
+            color: #888;
+            min-width: 100px;
+        }
+        input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+            background: #0f3460;
+            color: #eee;
+            border: 2px solid #0f3460;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #00d4aa;
+        }
+        .settings-hint {
+            color: #666;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        /* Proxy groups styles */
+        .proxy-group {
+            background: #0f3460;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .proxy-group-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #1a1a2e;
+        }
+        .proxy-group-name {
+            color: #00d4aa;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .proxy-group-type {
+            color: #888;
+            font-size: 12px;
+        }
+        .proxy-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 8px;
+        }
+        .proxy-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #16213e;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .proxy-item:hover {
+            border-color: #00d4aa;
+        }
+        .proxy-item.selected {
+            border-color: #00d4aa;
+            background: #00d4aa22;
+        }
+        .proxy-item.unavailable {
+            opacity: 0.5;
+        }
+        .proxy-name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .proxy-latency {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-right: 8px;
+            min-width: 50px;
+            text-align: center;
+        }
+        .proxy-latency.good {
+            background: #00d4aa33;
+            color: #00d4aa;
+        }
+        .proxy-latency.medium {
+            background: #f0a50033;
+            color: #f0a500;
+        }
+        .proxy-latency.bad {
+            background: #e9456033;
+            color: #e94560;
+        }
+        .proxy-latency.testing {
+            background: #0f3460;
+            color: #888;
+        }
+        .proxy-actions {
+            display: flex;
+            gap: 5px;
+        }
+        .test-all-btn {
+            margin-bottom: 15px;
+        }
+        .group-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        /* Collapsible section styles */
+        .collapsible-header {
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+        .collapsible-header:hover {
+            opacity: 0.8;
+        }
+        .collapsible-icon {
+            font-size: 0.8em;
+            transition: transform 0.3s;
+        }
+        .collapsible-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+        .collapsible-content {
+            max-height: 2000px;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .collapsible-content.collapsed {
+            max-height: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 Mihomo Dashboard</h1>
+
+    <div class="card">
+        <h2>⚙️ Settings</h2>
+        <div class="settings-row">
+            <label>API URL:</label>
+            <input type="text" id="api-url" placeholder="http://127.0.0.1:9090" value="http://127.0.0.1:9090">
+            <button onclick="saveSettings()">💾 Save</button>
+            <button onclick="testConnection()">🔄 Test</button>
+        </div>
+        <p class="settings-hint">Enter your mihomo API endpoint (external-controller URL)</p>
+        <div id="settings-message" class="message"></div>
+    </div>
+
+    <div class="card">
+        <h2>Current Status <button class="refresh-btn" onclick="refreshAll()">🔄 Refresh</button></h2>
+        <div id="status-content">
+            <div class="loading">Loading...</div>
+        </div>
+        <div id="status-message" class="message"></div>
+    </div>
+
+    <div class="card">
+        <h2>Mode Control</h2>
+        <p style="color: #888; margin-bottom: 10px;">Change routing strategy:</p>
+        <div class="controls">
+            <button id="mode-rule" onclick="setMode('rule')">📋 Rule</button>
+            <button id="mode-global" onclick="setMode('global')">🌍 Global</button>
+            <button id="mode-direct" onclick="setMode('direct')">➡️ Direct</button>
+        </div>
+        <div id="mode-message" class="message"></div>
+    </div>
+
+    <div class="card">
+        <h2>Proxy Selection</h2>
+        <p style="color: #888; margin-bottom: 10px;">Change GLOBAL proxy group:</p>
+        <div class="controls">
+            <button id="proxy-direct" onclick="setProxy('DIRECT')">➡️ DIRECT</button>
+            <button id="proxy-gfw" onclick="setProxy('翻墙机场 GFWAirPort')">✈️ 翻墙机场</button>
+            <button id="proxy-sg" onclick="setProxy('Singapore V2 - B Group')">🇸🇬 Singapore</button>
+            <button id="proxy-jp" onclick="setProxy('Tokyo V2 - B Group')">🇯🇵 Tokyo</button>
+            <button id="proxy-hk" onclick="setProxy('HongKong V2 - B Group')">🇭🇰 HongKong</button>
+        </div>
+        <div id="proxy-message" class="message"></div>
+    </div>
+
+    <div class="card">
+        <h2>Active Connections</h2>
+        <div id="connections" class="connections">
+            <div class="loading">Loading...</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="collapsible-header" onclick="toggleProxyGroups()">
+            <h2>🌐 Proxy Groups & Servers</h2>
+            <span id="proxy-groups-icon" class="collapsible-icon collapsed">▼</span>
+        </div>
+        <div id="proxy-groups-content" class="collapsible-content collapsed">
+            <button class="test-all-btn" onclick="testAllLatency()">🚀 Test All Latency</button>
+            <div id="proxy-groups">
+                <div class="loading">Loading proxy groups...</div>
+            </div>
+            <div id="proxies-message" class="message"></div>
+        </div>
+    </div>
+
+    <script>
+        // Default API base URL
+        const DEFAULT_API_BASE = 'http://127.0.0.1:9090';
+        
+        // Get API base URL from localStorage or use default
+        function getApiBase() {
+            return localStorage.getItem('mihomo_api_url') || DEFAULT_API_BASE;
+        }
+        
+        // Save settings to localStorage
+        function saveSettings() {
+            const url = document.getElementById('api-url').value.trim();
+            if (!url) {
+                showMessage('settings-message', '❌ Please enter a valid URL', true);
+                return;
+            }
+            
+            // Validate URL format
+            try {
+                new URL(url);
+            } catch (e) {
+                showMessage('settings-message', '❌ Invalid URL format', true);
+                return;
+            }
+            
+            localStorage.setItem('mihomo_api_url', url);
+            showMessage('settings-message', '✅ Settings saved successfully');
+            refreshAll();
+        }
+        
+        // Test connection to API
+        async function testConnection() {
+            const url = document.getElementById('api-url').value.trim() || getApiBase();
+            try {
+                const response = await fetch(`${url}/configs`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                if (response.ok) {
+                    showMessage('settings-message', '✅ Connection successful');
+                } else {
+                    showMessage('settings-message', `❌ HTTP ${response.status}`, true);
+                }
+            } catch (error) {
+                showMessage('settings-message', `❌ Connection failed: ${error.message}`, true);
+            }
+        }
+        
+        // Load saved settings on page load
+        function loadSettings() {
+            const savedUrl = localStorage.getItem('mihomo_api_url');
+            if (savedUrl) {
+                document.getElementById('api-url').value = savedUrl;
+            }
+        }
+
+        async function fetchAPI(endpoint, options = {}) {
+            const API_BASE = getApiBase();
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    ...options,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    }
+                });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                // Handle empty responses (e.g., 204 No Content)
+                const contentType = response.headers.get('content-type');
+                const contentLength = response.headers.get('content-length');
+                
+                if (!contentType || !contentType.includes('application/json')) {
+                    return null;  // Non-JSON response
+                }
+                if (contentLength === '0') {
+                    return null;  // Empty body
+                }
+                
+                return await response.json();
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        async function getMode() {
+            const data = await fetchAPI('/configs');
+            return data.mode;
+        }
+
+        async function getGlobalProxy() {
+            const data = await fetchAPI('/proxies/GLOBAL');
+            return {
+                now: data.now,
+                type: data.type,
+                all: data.all
+            };
+        }
+
+        async function getConnections() {
+            const data = await fetchAPI('/connections');
+            return data.connections || [];
+        }
+
+        // Get all proxy groups
+        async function getProxyGroups() {
+            const data = await fetchAPI('/proxies');
+            return data.proxies || {};
+        }
+
+        // Test latency for a specific proxy
+        async function testProxyLatency(proxyName, groupElement) {
+            const latencyEl = groupElement.querySelector(`[data-proxy="${encodeURIComponent(proxyName)}"] .proxy-latency`);
+            if (latencyEl) {
+                latencyEl.textContent = 'Testing...';
+                latencyEl.className = 'proxy-latency testing';
+            }
+
+            try {
+                const encodedName = encodeURIComponent(proxyName);
+                const result = await fetchAPI(`/proxies/${encodedName}/delay?url=http://www.gstatic.com/generate_204&timeout=5000`);
+                
+                const delay = result.delay;
+                let latencyClass = 'good';
+                if (delay > 300) latencyClass = 'medium';
+                if (delay > 800) latencyClass = 'bad';
+                
+                if (latencyEl) {
+                    latencyEl.textContent = `${delay}ms`;
+                    latencyEl.className = `proxy-latency ${latencyClass}`;
+                }
+            } catch (error) {
+                if (latencyEl) {
+                    latencyEl.textContent = 'Error';
+                    latencyEl.className = 'proxy-latency bad';
+                }
+            }
+        }
+
+        // Test all proxies in a group
+        async function testGroupLatency(groupName) {
+            const groups = await getProxyGroups();
+            const group = groups[groupName];
+            if (!group || !group.all) return;
+
+            const groupEl = document.querySelector(`[data-group-name="${encodeURIComponent(groupName)}"]`);
+            if (!groupEl) return;
+
+            // Test each proxy sequentially to avoid overwhelming the API
+            for (const proxyName of group.all) {
+                await testProxyLatency(proxyName, groupEl);
+                // Small delay between tests
+                await new Promise(r => setTimeout(r, 100));
+            }
+        }
+
+        // Test all proxies in all groups
+        async function testAllLatency() {
+            const btn = document.querySelector('.test-all-btn');
+            btn.disabled = true;
+            btn.textContent = 'Testing...';
+
+            try {
+                const groups = await getProxyGroups();
+                const groupNames = Object.keys(groups).filter(name => 
+                    groups[name].type === 'Selector' || groups[name].type === 'URLTest' || groups[name].type === 'LoadBalance'
+                );
+
+                for (const groupName of groupNames) {
+                    await testGroupLatency(groupName);
+                }
+
+                showMessage('proxies-message', '✅ All latency tests completed');
+            } catch (error) {
+                showMessage('proxies-message', `❌ Error: ${error.message}`, true);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🚀 Test All Latency';
+            }
+        }
+
+        // Select a proxy in a group
+        async function selectProxy(groupName, proxyName) {
+            try {
+                await fetchAPI(`/proxies/${encodeURIComponent(groupName)}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ name: proxyName })
+                });
+                showMessage('proxies-message', `✅ Selected ${proxyName} in ${groupName}`);
+                await renderProxyGroups();
+                await refreshAll();
+            } catch (error) {
+                showMessage('proxies-message', `❌ Error: ${error.message}`, true);
+            }
+        }
+
+        // Render proxy groups
+        async function renderProxyGroups() {
+            try {
+                const groups = await getProxyGroups();
+                const container = document.getElementById('proxy-groups');
+                
+                // Filter out non-group proxies (like individual servers)
+                const groupNames = Object.keys(groups).filter(name => {
+                    const type = groups[name].type;
+                    return type === 'Selector' || type === 'URLTest' || type === 'LoadBalance' || type === 'Fallback';
+                });
+
+                if (groupNames.length === 0) {
+                    container.innerHTML = '<div style="color: #888; text-align: center;">No proxy groups found</div>';
+                    return;
+                }
+
+                container.innerHTML = groupNames.map(groupName => {
+                    const group = groups[groupName];
+                    const allProxies = group.all || [];
+                    
+                    return `
+                        <div class="proxy-group" data-group-name="${encodeURIComponent(groupName)}">
+                            <div class="proxy-group-header">
+                                <div>
+                                    <div class="proxy-group-name">${groupName}</div>
+                                    <div class="proxy-group-type">${group.type} | Current: ${group.now || 'N/A'}</div>
+                                </div>
+                                <button class="small" onclick="testGroupLatency('${groupName.replace(/'/g, "\\'")}')">🧪 Test</button>
+                            </div>
+                            <div class="proxy-list">
+                                ${allProxies.map(proxyName => `
+                                    <div class="proxy-item ${group.now === proxyName ? 'selected' : ''}" data-proxy="${encodeURIComponent(proxyName)}">
+                                        <span class="proxy-name">${proxyName}</span>
+                                        <div class="proxy-actions">
+                                            <span class="proxy-latency testing">-</span>
+                                            <button class="small" onclick="selectProxy('${groupName.replace(/'/g, "\\'")}', '${proxyName.replace(/'/g, "\\'")}')">Select</button>
+                                            <button class="small" onclick="testProxyLatency('${proxyName.replace(/'/g, "\\'")}', this.closest('.proxy-group'))">Test</button>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                document.getElementById('proxy-groups').innerHTML = `
+                    <div style="color: #e94560; text-align: center;">
+                        ❌ Error loading proxy groups: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        function showMessage(id, text, isError = false) {
+            const el = document.getElementById(id);
+            el.textContent = text;
+            el.className = 'message ' + (isError ? 'error' : 'success');
+            setTimeout(() => {
+                el.className = 'message';
+            }, 3000);
+        }
+
+        async function refreshAll() {
+            const API_BASE = getApiBase();
+            try {
+                // Get mode
+                const mode = await getMode();
+                document.getElementById('mode-rule').className = mode === 'rule' ? 'active' : '';
+                document.getElementById('mode-global').className = mode === 'global' ? 'active' : '';
+                document.getElementById('mode-direct').className = mode === 'direct' ? 'active' : '';
+
+                // Get proxy
+                const proxy = await getGlobalProxy();
+                const chain = [];
+                
+                // Build the full chain
+                let currentProxy = proxy.now;
+                chain.push(`GLOBAL → ${currentProxy}`);
+                
+                // Check if it's 翻墙机场 or auto-select
+                if (currentProxy === '翻墙机场 GFWAirPort') {
+                    const gfwData = await fetchAPI('/proxies/翻墙机场%20GFWAirPort');
+                    chain.push(`翻墙机场 → ${gfwData.now}`);
+                    if (gfwData.now === '自动选择') {
+                        const autoData = await fetchAPI('/proxies/自动选择');
+                        chain.push(`自动选择 → ${autoData.now}`);
+                    }
+                }
+
+                // Get 自动选择 current node
+                let autoSelectNode = '';
+                try {
+                    const autoData = await fetchAPI('/proxies/自动选择');
+                    autoSelectNode = autoData.now;
+                } catch (e) {}
+
+                // Build status display
+                let statusHTML = `
+                    <div class="status">
+                        <span class="status-label">API:</span>
+                        <span class="status-value">${API_BASE}</span>
+                    </div>
+                    <div class="status">
+                        <span class="status-label">Mode:</span>
+                        <span class="status-value">${mode}</span>
+                    </div>
+                    <div class="status">
+                        <span class="status-label">GLOBAL:</span>
+                        <span class="status-value">${proxy.now}</span>
+                    </div>
+                `;
+                
+                if (autoSelectNode && (proxy.now === '翻墙机场 GFWAirPort' || proxy.now === '自动选择')) {
+                    statusHTML += `
+                        <div class="status">
+                            <span class="status-label">Auto Select:</span>
+                            <span class="status-value">${autoSelectNode}</span>
+                        </div>
+                    `;
+                }
+
+                document.getElementById('status-content').innerHTML = statusHTML;
+
+                // Update proxy buttons
+                const proxyMap = {
+                    'DIRECT': 'proxy-direct',
+                    '翻墙机场 GFWAirPort': 'proxy-gfw',
+                    'Singapore V2 - B Group': 'proxy-sg',
+                    'Tokyo V2 - B Group': 'proxy-jp',
+                    'HongKong V2 - B Group': 'proxy-hk'
+                };
+                
+                Object.keys(proxyMap).forEach(key => {
+                    const btn = document.getElementById(proxyMap[key]);
+                    if (btn) btn.className = proxy.now === key ? 'active' : '';
+                });
+
+                // Get connections
+                const connections = await getConnections();
+                const connDiv = document.getElementById('connections');
+                if (connections.length === 0) {
+                    connDiv.innerHTML = '<div style="color: #888; text-align: center;">No active connections</div>';
+                } else {
+                    connDiv.innerHTML = connections.slice(0, 20).map(c => {
+                        const chains = c.chains ? c.chains.join(' → ') : 'N/A';
+                        return `
+                            <div class="connection-item">
+                                <div class="host">${c.metadata?.host || 'Unknown'}</div>
+                                <div class="chain">${chains}</div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+                // Refresh proxy groups
+                await renderProxyGroups();
+
+            } catch (error) {
+                document.getElementById('status-content').innerHTML = `
+                    <div style="color: #e94560; text-align: center;">
+                        ❌ Error: ${error.message}<br>
+                        <small>Make sure mihomo is running on ${API_BASE}</small>
+                    </div>
+                `;
+            }
+        }
+
+        async function setMode(mode) {
+            try {
+                const response = await fetchAPI('/configs', {
+                    method: 'PATCH',
+                    body: JSON.stringify({ mode: mode })
+                });
+                // PATCH may return empty response on success
+                showMessage('mode-message', `✅ Mode changed to: ${mode}`);
+                await refreshAll();
+            } catch (error) {
+                showMessage('mode-message', `❌ Error: ${error.message}`, true);
+            }
+        }
+
+        async function setProxy(proxyName) {
+            try {
+                const response = await fetchAPI('/proxies/GLOBAL', {
+                    method: 'PUT',
+                    body: JSON.stringify({ name: proxyName })
+                });
+                // PUT may return empty response on success
+                showMessage('proxy-message', `✅ Proxy changed to: ${proxyName}`);
+                await refreshAll();
+            } catch (error) {
+                showMessage('proxy-message', `❌ Error: ${error.message}`, true);
+            }
+        }
+
+        // Auto refresh every 5 seconds
+        setInterval(refreshAll, 5000);
+
+        // Toggle proxy groups section
+        function toggleProxyGroups() {
+            const content = document.getElementById('proxy-groups-content');
+            const icon = document.getElementById('proxy-groups-icon');
+            const isCollapsed = content.classList.contains('collapsed');
+            
+            if (isCollapsed) {
+                content.classList.remove('collapsed');
+                icon.classList.remove('collapsed');
+                // Load proxy groups when expanding
+                renderProxyGroups();
+            } else {
+                content.classList.add('collapsed');
+                icon.classList.add('collapsed');
+            }
+        }
+
+        // Initial load
+        loadSettings();
+        refreshAll();
+    </script>
+</body>
+</html>
