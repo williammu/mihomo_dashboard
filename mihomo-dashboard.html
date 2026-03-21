@@ -221,11 +221,14 @@
         }
         .proxy-latency {
             font-size: 12px;
-            padding: 2px 8px;
+            padding: 4px 10px;
             border-radius: 4px;
             margin-right: 8px;
-            min-width: 50px;
+            width: 70px;
+            min-width: 70px;
             text-align: center;
+            display: inline-block;
+            box-sizing: border-box;
         }
         .proxy-latency.good {
             background: #00d4aa33;
@@ -513,6 +516,15 @@
             }
         }
 
+        // Set testing state for all proxies in a group
+        function setGroupTestingState(groupEl) {
+            const latencyEls = groupEl.querySelectorAll('.proxy-latency');
+            latencyEls.forEach(el => {
+                el.textContent = 'Testing...';
+                el.className = 'proxy-latency testing';
+            });
+        }
+
         // Test all proxies in a group
         async function testGroupLatency(groupName) {
             const groups = await getProxyGroups();
@@ -531,12 +543,24 @@
             }
             if (!groupEl) return;
 
+            // Set all proxies to testing state first
+            setGroupTestingState(groupEl);
+
             // Test each proxy sequentially to avoid overwhelming the API
             for (const proxyName of group.all) {
                 await testProxyLatency(proxyName, groupEl);
                 // Small delay between tests
                 await new Promise(r => setTimeout(r, 100));
             }
+        }
+
+        // Set testing state for all proxies in all groups
+        function setAllTestingState() {
+            const latencyEls = document.querySelectorAll('.proxy-latency');
+            latencyEls.forEach(el => {
+                el.textContent = 'Testing...';
+                el.className = 'proxy-latency testing';
+            });
         }
 
         // Test all proxies in all groups
@@ -550,6 +574,9 @@
                 const groupNames = Object.keys(groups).filter(name => 
                     groups[name].type === 'Selector' || groups[name].type === 'URLTest' || groups[name].type === 'LoadBalance'
                 );
+
+                // Set all to testing state immediately
+                setAllTestingState();
 
                 for (const groupName of groupNames) {
                     await testGroupLatency(groupName);
