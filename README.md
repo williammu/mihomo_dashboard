@@ -10,8 +10,9 @@ A lightweight, web-based dashboard for managing and monitoring the [Mihomo](http
 - 🔧 **Configurable API URL** - Connect to any mihomo instance (default: `http://127.0.0.1:9090`)
 - 🎨 **Dark Theme** - Easy on the eyes with a modern dark UI
 - 🌐 **Mode Control** - Switch between Rule / Global / Direct modes
-- 🚀 **Proxy Selection** - Quick switch between common proxies
-- 📊 **Proxy Groups & Latency Testing** - View all servers with latency tests
+- 🌳 **Hierarchical Proxy Tree** - View proxy groups, sub-groups, and servers in a tree structure
+- 📊 **Rules Info** - See which proxy groups are actually used in Rule mode
+- 🚀 **Latency Testing** - Test individual proxies, groups, or all at once
 - 🔌 **Active Connections** - Monitor real-time connections
 - 💾 **Persistent Settings** - API URL saved in browser localStorage
 
@@ -38,10 +39,10 @@ A lightweight, web-based dashboard for managing and monitoring the [Mihomo](http
 | Feature | Description |
 |---------|-------------|
 | Settings | Configure API endpoint URL |
-| Status | Current mode, proxy, and auto-select status |
 | Mode Control | Switch between Rule / Global / Direct |
-| Proxy Selection | Quick switch GLOBAL proxy group |
-| Proxy Groups | Expandable section with all servers & latency |
+| Proxy Tree | Hierarchical view of groups and servers |
+| Rules Info | See which groups are used in Rule mode |
+| Latency Testing | Test proxies with progress bar |
 | Connections | Real-time active connection monitoring |
 
 ## Usage
@@ -50,27 +51,55 @@ A lightweight, web-based dashboard for managing and monitoring the [Mihomo](http
 
 | Mode | Description |
 |------|-------------|
-| **Rule** | Route traffic based on rules (most common) |
-| **Global** | All traffic through proxy |
+| **Rule** | Route traffic based on rules configuration (most common) |
+| **Global** | All traffic through GLOBAL proxy selection |
 | **Direct** | All traffic bypass proxy |
 
-### Proxy Selection
+### Proxy Tree View
 
-Quick buttons for common proxies:
-- DIRECT - Bypass proxy
-- 翻墙机场 GFWAirPort - Airport proxy group
-- Singapore / Tokyo / HongKong - Direct server selection
+The dashboard displays proxies in a hierarchical tree structure:
+
+- **📁 Top-level Groups** - Main proxy groups (Selector, URLTest, LoadBalance, Fallback)
+- **📁 Sub-groups** - Nested proxy groups
+- **🌐 Leaf Proxies** - Individual proxy servers
+
+**Interactions:**
+- Click **header** → Select the proxy/group
+- Click **▶/▼** → Expand/collapse group
+- Click **🧪 Test** → Test latency
+
+**Group Display:**
+- Type (Selector/URLTest/LoadBalance/Fallback)
+- Item count
+- Currently selected proxy (`now`)
+- Latency of selected proxy
 
 ### Latency Testing
 
-- **🚀 Test All Latency** - Test all proxies in all groups
-- **🧪 Test** (group) - Test all proxies in a specific group
-- **Test** (server) - Test a single server
+| Button | Description |
+|--------|-------------|
+| **🚀 Test All Latency** | Test all leaf proxies + all groups (their `now` nodes) |
+| **📁 Test Group Latency** | Test only proxy groups (their `now` nodes) |
+| **🧪 Test** (individual) | Test single proxy or group |
 
-Latency colors:
+**Features:**
+- Progress bar with percentage
+- Status counter (good/medium/bad/error)
+- Real-time latency badge updates
+- Color-coded results
+
+**Latency Colors:**
 - 🟢 Green (< 300ms) - Good
 - 🟡 Yellow (300-800ms) - Medium
 - 🔴 Red (> 800ms) - Bad
+
+### Rules Info (Rule Mode)
+
+When in **Rule** mode, the dashboard shows which proxy groups are actually used by your rules configuration. This helps you understand:
+
+- Which groups matter in Rule mode
+- Whether GLOBAL selection has any effect
+- Which groups you should focus on testing
 
 ## API Configuration
 
@@ -113,9 +142,10 @@ secret: "your-secret"
 | `/configs` | PATCH | Update mode |
 | `/proxies` | GET | List all proxy groups |
 | `/proxies/{name}` | GET | Get proxy group details |
-| `/proxies/{name}` | PUT | Select proxy in group |
+| `/proxies/{name}` | PUT | Select proxy in GLOBAL |
 | `/proxies/{name}/delay` | GET | Test proxy latency |
 | `/connections` | GET | List active connections |
+| `/rules` | GET | List routing rules |
 
 ## Browser Compatibility
 
@@ -126,6 +156,7 @@ secret: "your-secret"
 Requires:
 - Fetch API
 - ES6+ (async/await, arrow functions)
+- CSS Grid & Flexbox
 - localStorage
 
 ## Development
@@ -137,6 +168,26 @@ mihomo-dashboard.html  # Main dashboard file
 spec.md                # Technical specification
 README.md              # This file
 ```
+
+## Architecture Highlights
+
+### Hierarchical Proxy Tree
+- Multi-column grid layout for efficient space usage
+- Recursive rendering of nested proxy groups
+- All groups collapsed by default
+- Visual distinction between group types
+
+### Latency Testing
+- Groups tested via their `now` node (selected proxy)
+- Recursive collection of leaf proxies from nested groups
+- Duplicate detection (same proxy in multiple groups)
+- Progress tracking with visual feedback
+
+### Rules Analysis
+- Fetches rules from `/rules` endpoint
+- Extracts unique proxy groups used in rules
+- Displays only in Rule mode
+- Helps users understand routing behavior
 
 ## Troubleshooting
 
@@ -151,6 +202,11 @@ README.md              # This file
 ### CORS errors
 - The dashboard must be opened as a file or served from the same origin
 - Use a local HTTP server if needed: `python3 -m http.server 8080`
+
+### Proxy groups not showing
+- Ensure mihomo is fully loaded with your config
+- Check browser console for API errors
+- Verify the API URL is correct
 
 ## License
 

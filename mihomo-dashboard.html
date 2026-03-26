@@ -23,7 +23,7 @@
             background: #1a1a2e;
             color: #eee;
             padding: 20px;
-            max-width: 1000px;
+            max-width: 1600px;
             margin: 0 auto;
         }
         h1 {
@@ -170,12 +170,638 @@
             font-size: 12px;
             margin-top: 5px;
         }
-        /* Proxy groups styles */
+        /* Current selection display */
+        .current-selection {
+            background: #0f3460;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #00d4aa;
+        }
+        .current-selection-label {
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+        .current-selection-value {
+            color: #00d4aa;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        /* Proxy button with integrated latency */
+        .proxy-btn-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .proxy-btn-with-latency {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 10px 15px;
+            min-width: 160px;
+        }
+        .proxy-btn-content {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .proxy-btn-latency {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            min-width: 45px;
+            text-align: center;
+            background: rgba(0,0,0,0.3);
+            color: #888;
+            font-weight: bold;
+        }
+        .proxy-btn-with-latency.active .proxy-btn-latency {
+            background: rgba(0,0,0,0.2);
+        }
+        .proxy-btn-latency.good {
+            background: #00d4aa33;
+            color: #00d4aa;
+        }
+        .proxy-btn-latency.medium {
+            background: #f0a50033;
+            color: #f0a500;
+        }
+        .proxy-btn-latency.bad {
+            background: #e9456033;
+            color: #e94560;
+        }
+        .proxy-btn-latency.testing {
+            background: rgba(0,0,0,0.3);
+            color: #00d4aa;
+            animation: pulse 1s infinite;
+        }
+        /* Hover styles for proxy button - ensure latency badge is visible */
+        .proxy-btn-with-latency:hover .proxy-btn-latency {
+            background: rgba(0,0,0,0.4);
+            color: #fff;
+        }
+        .proxy-btn-with-latency.active:hover .proxy-btn-latency {
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+        }
+        /* Table-style proxy list with vertical alignment */
+        .proxy-table {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .proxy-table-row {
+            display: grid;
+            grid-template-columns: 1fr 70px 44px;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #0f3460;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+        .proxy-table-row:hover {
+            border-color: #00d4aa;
+        }
+        .proxy-table-row.active {
+            background: #00d4aa22;
+            border-color: #00d4aa;
+        }
+        .proxy-table-row.active .proxy-table-name {
+            color: #00d4aa;
+            font-weight: bold;
+        }
+        /* Proxy group styling - distinct from normal proxies */
+        .proxy-table-row.proxy-group {
+            background: linear-gradient(135deg, #1a3a5c 0%, #0f3460 100%);
+            border-left: 4px solid #f0a500;
+        }
+        .proxy-table-row.proxy-group:hover {
+            border-color: #f0a500;
+            box-shadow: 0 2px 8px rgba(240, 165, 0, 0.2);
+        }
+        .proxy-table-row.proxy-group.active {
+            background: linear-gradient(135deg, #1a4a4c 0%, #00d4aa22 100%);
+            border-color: #00d4aa;
+            border-left-color: #f0a500;
+        }
+        .proxy-group-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #f0a50033;
+            color: #f0a500;
+            margin-left: 6px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .proxy-type-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #0f3460;
+            color: #888;
+            margin-left: 6px;
+            font-weight: normal;
+            text-transform: uppercase;
+        }
+        .proxy-table-name {
+            color: #eee;
+            font-size: 14px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        /* Hierarchical Proxy Tree Styles */
+        .proxy-tree {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 12px;
+            align-items: start;
+        }
+        @media (max-width: 850px) {
+            .proxy-tree {
+                grid-template-columns: 1fr;
+            }
+        }
+        .proxy-tree-group {
+            background: linear-gradient(135deg, #1a3a5c 0%, #0f3460 100%);
+            border-radius: 10px;
+            border: 1px solid #1a3a5c;
+            overflow: hidden;
+            min-width: 0;
+            height: fit-content;
+        }
+        .proxy-tree-group-header {
+            display: grid;
+            grid-template-columns: 20px 24px 1fr auto auto;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .proxy-tree-group-header:hover {
+            background: rgba(240, 165, 0, 0.1);
+        }
+        .proxy-tree-group-header.expanded {
+            border-bottom-color: #1a3a5c;
+        }
+        .proxy-tree-group-header.active {
+            background: rgba(0, 212, 170, 0.2);
+            border-left: 3px solid #00d4aa;
+        }
+        .proxy-tree-group-header.selected {
+            background: rgba(0, 212, 170, 0.3);
+            border-left: 3px solid #00d4aa;
+        }
+        .proxy-tree-toggle {
+            font-size: 12px;
+            color: #888;
+            transition: transform 0.3s;
+            width: 20px;
+            text-align: center;
+        }
+        .proxy-tree-toggle.collapsed {
+            transform: rotate(-90deg);
+        }
+        .proxy-tree-group-icon {
+            font-size: 18px;
+        }
+        .proxy-tree-group-info {
+            flex: 1;
+        }
+        .proxy-tree-group-icon {
+            font-size: 16px;
+            text-align: center;
+        }
+        .proxy-tree-group-info {
+            min-width: 0;
+            overflow: hidden;
+        }
+        .proxy-tree-group-name {
+            font-weight: bold;
+            color: #f0a500;
+            font-size: 13px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .proxy-tree-group-meta {
+            font-size: 10px;
+            color: #888;
+        }
+        .proxy-tree-group-select {
+            background: transparent;
+            border: 1px solid #f0a500;
+            color: #f0a500;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .proxy-tree-group-select:hover {
+            background: #f0a500;
+            color: #1a1a2e;
+        }
+        .proxy-tree-group-select.active {
+            background: #00d4aa;
+            border-color: #00d4aa;
+            color: #1a1a2e;
+        }
+        .proxy-tree-children {
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            max-height: 350px;
+            overflow-y: auto;
+        }
+        .proxy-tree-children.collapsed {
+            display: none;
+        }
+        /* Sub-group styling (nested proxy groups) */
+        .proxy-tree-subgroup {
+            background: rgba(26, 58, 92, 0.5);
+            border-radius: 6px;
+            border: 1px solid #1a4a6c;
+            margin-left: 12px;
+            overflow: hidden;
+        }
+        .proxy-tree-subgroup-header {
+            display: grid;
+            grid-template-columns: 16px 18px 1fr auto auto;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 10px;
+            background: rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .proxy-tree-subgroup-header:hover {
+            background: rgba(100, 150, 255, 0.1);
+        }
+        .proxy-tree-subgroup-header.selected {
+            background: rgba(0, 212, 170, 0.25);
+            border-left: 2px solid #00d4aa;
+        }
+        .proxy-tree-subgroup-icon {
+            font-size: 12px;
+            color: #6496ff;
+            text-align: center;
+        }
+        .proxy-tree-subgroup-name {
+            font-size: 12px;
+            color: #6496ff;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .proxy-tree-subgroup-select {
+            background: transparent;
+            border: 1px solid #6496ff;
+            color: #6496ff;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 9px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .proxy-tree-subgroup-select:hover {
+            background: #6496ff;
+            color: #1a1a2e;
+        }
+        .proxy-tree-subgroup-select.active {
+            background: #00d4aa;
+            border-color: #00d4aa;
+            color: #1a1a2e;
+        }
+        .proxy-tree-subgroup-children {
+            padding: 4px;
+            padding-left: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .proxy-tree-subgroup-children.collapsed {
+            display: none;
+        }
+        /* Individual proxy styling (leaf nodes) */
+        .proxy-tree-leaf {
+            display: grid;
+            grid-template-columns: 18px 1fr auto auto auto;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            background: #16213e;
+            border-radius: 5px;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+            margin-left: 12px;
+            min-width: 0;
+        }
+        .proxy-tree-leaf:hover {
+            border-color: #00d4aa;
+            background: #1a2a4a;
+        }
+        .proxy-tree-leaf.selected {
+            background: #00d4aa22;
+            border-color: #00d4aa;
+        }
+        .proxy-tree-leaf.selected .proxy-tree-leaf-name {
+            color: #00d4aa;
+            font-weight: bold;
+        }
+        .proxy-tree-leaf.selected .proxy-tree-leaf-name::before {
+            content: "✓ ";
+        }
+        .proxy-tree-leaf-icon {
+            font-size: 12px;
+            text-align: center;
+        }
+        .proxy-tree-leaf-name {
+            font-size: 12px;
+            color: #eee;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            min-width: 0;
+            cursor: pointer;
+        }
+        .proxy-tree-leaf-type {
+            font-size: 9px;
+            padding: 1px 5px;
+            border-radius: 3px;
+            background: #0f3460;
+            color: #888;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        .proxy-tree-leaf-latency {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            background: #0f3460;
+            color: #888;
+            font-weight: bold;
+            min-width: 40px;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .proxy-tree-leaf-latency.good {
+            background: #00d4aa33;
+            color: #00d4aa;
+        }
+        .proxy-tree-leaf-latency.medium {
+            background: #f0a50033;
+            color: #f0a500;
+        }
+        .proxy-tree-leaf-latency.bad {
+            background: #e9456033;
+            color: #e94560;
+        }
+        .proxy-tree-leaf-latency.testing {
+            animation: pulse 1s infinite;
+            color: #00d4aa;
+        }
+        .proxy-tree-leaf-test {
+            background: transparent;
+            border: 1px solid #444;
+            color: #888;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 9px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .proxy-tree-leaf-test:hover {
+            background: #00d4aa;
+            border-color: #00d4aa;
+            color: #1a1a2e;
+        }
+        /* Group test button */
+        .proxy-tree-group-test {
+            background: transparent;
+            border: 1px solid #444;
+            color: #888;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 9px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .proxy-tree-group-test:hover {
+            background: #00d4aa;
+            border-color: #00d4aa;
+            color: #1a1a2e;
+        }
+        /* Standalone proxy (not in a group) */
+        .proxy-tree-standalone {
+            background: #0f3460;
+            border-radius: 6px;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+            min-width: 0;
+        }
+        .proxy-tree-standalone:hover {
+            border-color: #00d4aa;
+        }
+        .proxy-tree-standalone.selected {
+            background: #00d4aa22;
+            border-color: #00d4aa;
+        }
+        .proxy-tree-standalone .proxy-tree-leaf {
+            margin-left: 0;
+        }
+        /* Standalone section - spans full width */
+        .proxy-tree-standalone-section {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 8px;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #0f3460;
+        }
+        @media (max-width: 650px) {
+            .proxy-tree-standalone-section {
+                grid-template-columns: 1fr;
+            }
+        }
+        .proxy-tree-standalone-header {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 0;
+        }
+        .proxy-tree-standalone-header span {
+            color: #00d4aa;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        .proxy-tree-standalone-header div {
+            flex: 1;
+            height: 1px;
+            background: #0f3460;
+        }
+        /* Progress bar for testing */
+        .test-progress-container {
+            width: 100%;
+            height: 4px;
+            background: #0f3460;
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+            display: none;
+        }
+        .test-progress-container.active {
+            display: block;
+        }
+        .test-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4aa, #00a884);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        .test-status-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background: #0f3460;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+        .test-status-bar.hidden {
+            display: none;
+        }
+        .test-status-text {
+            color: #888;
+        }
+        .test-status-count {
+            color: #00d4aa;
+            font-weight: bold;
+        }
+        .test-status-results {
+            margin-left: auto;
+            display: flex;
+            gap: 12px;
+        }
+        .test-result-good { color: #00d4aa; }
+        .test-result-medium { color: #f0a500; }
+        .test-result-bad { color: #e94560; }
+        /* Group test button */
+        .proxy-tree-group-test {
+            background: transparent;
+            border: 1px solid #666;
+            color: #888;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 9px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            margin-left: 4px;
+        }
+        .proxy-tree-group-test:hover {
+            background: #00d4aa;
+            border-color: #00d4aa;
+            color: #1a1a2e;
+        }
+        .proxy-tree-subgroup .proxy-tree-group-test {
+            border-color: #6496ff;
+            color: #6496ff;
+        }
+        .proxy-tree-subgroup .proxy-tree-group-test:hover {
+            background: #6496ff;
+            color: #1a1a2e;
+        }
+        .proxy-table-latency {
+            text-align: center;
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: #16213e;
+            color: #888;
+            font-weight: bold;
+            min-width: 50px;
+        }
+        .proxy-table-latency.good {
+            background: #00d4aa33;
+            color: #00d4aa;
+        }
+        .proxy-table-latency.medium {
+            background: #f0a50033;
+            color: #f0a500;
+        }
+        .proxy-table-latency.bad {
+            background: #e9456033;
+            color: #e94560;
+        }
+        .proxy-table-latency.testing {
+            animation: pulse 1s infinite;
+            color: #00d4aa;
+        }
+        .proxy-table-test {
+            background: #16213e;
+            border: 2px solid #16213e;
+            color: #888;
+            padding: 0;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .proxy-table-test:hover {
+            background: #00d4aa;
+            border-color: #00d4aa;
+            color: #1a1a2e;
+        }
+        .proxy-table-test.testing {
+            animation: pulse 1s infinite;
+            color: #00d4aa;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        /* Advanced view - Proxy group styles */
         .proxy-group {
             background: #0f3460;
             border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
+            padding: 12px;
+            margin-bottom: 12px;
+            border: 1px solid #1a1a2e;
         }
         .proxy-group-header {
             display: flex;
@@ -183,33 +809,33 @@
             align-items: center;
             margin-bottom: 10px;
             padding-bottom: 10px;
-            border-bottom: 1px solid #1a1a2e;
+            border-bottom: 1px solid #16213e;
         }
         .proxy-group-name {
             color: #00d4aa;
             font-weight: bold;
-            font-size: 1.1em;
+            font-size: 14px;
         }
         .proxy-group-type {
             color: #888;
             font-size: 12px;
+            margin-top: 2px;
         }
         .proxy-list {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
         }
         .proxy-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
             background: #16213e;
-            padding: 10px 14px;
+            padding: 8px 12px;
             border-radius: 6px;
             font-size: 13px;
-            border: 2px solid transparent;
+            border: 1px solid transparent;
             transition: all 0.2s;
-            min-height: 44px;
         }
         .proxy-item:hover {
             border-color: #00d4aa;
@@ -218,25 +844,27 @@
             border-color: #00d4aa;
             background: #00d4aa22;
         }
-        .proxy-item.unavailable {
-            opacity: 0.5;
+        .proxy-item.selected .proxy-name::before {
+            content: "✓ ";
+            color: #00d4aa;
+            font-weight: bold;
         }
         .proxy-name {
             flex: 1;
             word-break: break-word;
             line-height: 1.4;
             padding-right: 10px;
+            color: #eee;
         }
         .proxy-latency {
             font-size: 12px;
-            padding: 4px 10px;
+            padding: 3px 10px;
             border-radius: 4px;
             margin-right: 8px;
-            width: 70px;
-            min-width: 70px;
+            min-width: 55px;
             text-align: center;
-            display: inline-block;
-            box-sizing: border-box;
+            background: #0f3460;
+            color: #888;
         }
         .proxy-latency.good {
             background: #00d4aa33;
@@ -252,21 +880,106 @@
         }
         .proxy-latency.testing {
             background: #0f3460;
-            color: #888;
+            color: #00d4aa;
+            animation: pulse 1s infinite;
         }
-        .proxy-actions {
-            display: flex;
-            gap: 5px;
-            flex-shrink: 0;
-            align-items: center;
+        /* Debug tool styles */
+        .debug-output {
+            background: #0a0a14;
+            border: 1px solid #0f3460;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 500px;
+            overflow-y: auto;
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            display: none;
         }
-        .test-all-btn {
-            margin-bottom: 15px;
+        .debug-output.visible {
+            display: block;
         }
-        .group-actions {
+        .debug-json {
+            margin: 0;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .debug-json .key {
+            color: #9cdcfe;
+        }
+        .debug-json .string {
+            color: #ce9178;
+        }
+        .debug-json .number {
+            color: #b5cea8;
+        }
+        .debug-json .boolean {
+            color: #569cd6;
+        }
+        .debug-json .null {
+            color: #569cd6;
+        }
+        .debug-controls {
             display: flex;
             gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .debug-btn {
+            background: #1a1a2e;
+            border: 1px solid #444;
+            color: #888;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        /* Rules info display */
+        .rules-info {
+            background: #0f3460;
+            border-radius: 8px;
+            padding: 12px 16px;
             margin-top: 10px;
+            font-size: 12px;
+        }
+        .rules-info-header {
+            color: #00d4aa;
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .rules-info-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .rules-info-item {
+            background: #16213e;
+            padding: 4px 10px;
+            border-radius: 4px;
+            color: #eee;
+            border: 1px solid #1a3a5c;
+        }
+        .rules-info-item.global {
+            border-color: #f0a500;
+            color: #f0a500;
+        }
+        .rules-info-item.direct {
+            border-color: #888;
+            color: #888;
+        }
+        .debug-btn:hover {
+            background: #0f3460;
+            border-color: #00d4aa;
+            color: #fff;
+        }
+        .debug-btn.active {
+            background: #00d4aa22;
+            border-color: #00d4aa;
+            color: #00d4aa;
         }
         /* Collapsible section styles */
         .collapsible-header {
@@ -313,16 +1026,8 @@
     </div>
 
     <div class="card">
-        <h2>Current Status <button class="refresh-btn" onclick="refreshAll()">🔄 Refresh</button></h2>
-        <div id="status-content">
-            <div class="loading">Loading...</div>
-        </div>
-        <div id="status-message" class="message"></div>
-    </div>
-
-    <div class="card">
         <h2>Mode Control</h2>
-        <p style="color: #888; margin-bottom: 10px;">Change routing strategy:</p>
+        <p style="color: #888; margin-bottom: 10px;">Current routing strategy:</p>
         <div class="controls">
             <button id="mode-rule" onclick="setMode('rule')">📋 Rule</button>
             <button id="mode-global" onclick="setMode('global')">🌍 Global</button>
@@ -333,35 +1038,91 @@
 
     <div class="card">
         <h2>Proxy Selection</h2>
+        <div class="current-selection">
+            <div class="current-selection-label">Current Proxy Group</div>
+            <div id="current-proxy-group" class="current-selection-value">Loading...</div>
+        </div>
+        <div class="current-selection" style="margin-top: 10px;">
+            <div class="current-selection-label">Actual Server Chain</div>
+            <div id="current-server-chain" class="current-selection-value" style="font-size: 13px;">Loading...</div>
+        </div>
+        <div id="rules-info-container" class="rules-info" style="display: none;">
+            <div class="rules-info-header">
+                <span>📋 Rule Mode Uses These Proxy Groups:</span>
+                <span id="rules-info-count" style="color: #888; font-weight: normal;"></span>
+            </div>
+            <div id="rules-info-list" class="rules-info-list"></div>
+            <div style="margin-top: 8px; color: #888; font-size: 11px;">
+                Note: In Rule mode, traffic is routed based on rules, not the GLOBAL selection above.
+            </div>
+        </div>
+        <div style="margin-bottom: 15px; margin-top: 15px;">
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <button onclick="testAllProxiesLatency()" id="test-all-btn">🚀 Test All Latency</button>
+                <button onclick="testGroupsLatency()" id="test-groups-btn" title="Test latency of all proxy groups (their selected proxies)">📁 Test Group Latency</button>
+            </div>
+            <div class="test-status-bar hidden" id="test-status-bar">
+                <span class="test-status-text">Testing:</span>
+                <span class="test-status-count" id="test-status-count">0/0</span>
+                <span class="test-status-text" id="test-status-name"></span>
+                <div class="test-status-results">
+                    <span class="test-result-good" id="test-result-good">● 0</span>
+                    <span class="test-result-medium" id="test-result-medium">● 0</span>
+                    <span class="test-result-bad" id="test-result-bad">● 0</span>
+                </div>
+            </div>
+            <div class="test-progress-container" id="test-progress-container">
+                <div class="test-progress-bar" id="test-progress-bar"></div>
+            </div>
+        </div>
         <p style="color: #888; margin-bottom: 10px;">Change GLOBAL proxy group:</p>
-        <div class="controls">
-            <button id="proxy-direct" onclick="setProxy('DIRECT')">➡️ DIRECT</button>
-            <button id="proxy-gfw" onclick="setProxy('翻墙机场 GFWAirPort')">✈️ 翻墙机场</button>
-            <button id="proxy-sg" onclick="setProxy('Singapore V2 - B Group')">🇸🇬 Singapore</button>
-            <button id="proxy-jp" onclick="setProxy('Tokyo V2 - B Group')">🇯🇵 Tokyo</button>
-            <button id="proxy-hk" onclick="setProxy('HongKong V2 - B Group')">🇭🇰 HongKong</button>
+        <div id="proxy-selection-buttons">
+            <div class="loading">Loading...</div>
         </div>
         <div id="proxy-message" class="message"></div>
     </div>
 
     <div class="card">
-        <h2>Active Connections</h2>
+        <h2>Active Connections <button class="refresh-btn" onclick="refreshAll()">🔄 Refresh</button></h2>
         <div id="connections" class="connections">
             <div class="loading">Loading...</div>
         </div>
     </div>
 
     <div class="card">
-        <div class="collapsible-header" onclick="toggleProxyGroups()">
-            <h2>🌐 Proxy Groups & Servers</h2>
-            <span id="proxy-groups-icon" class="collapsible-icon collapsed">▼</span>
+        <div class="collapsible-header" onclick="toggleAdvancedView()">
+            <h2>🔧 Advanced View (All Proxy Groups)</h2>
+            <span id="advanced-view-icon" class="collapsible-icon collapsed">▼</span>
         </div>
-        <div id="proxy-groups-content" class="collapsible-content collapsed">
+        <div id="advanced-view-content" class="collapsible-content collapsed">
             <button class="test-all-btn" onclick="testAllLatency()">🚀 Test All Latency</button>
             <div id="proxy-groups">
                 <div class="loading">Loading proxy groups...</div>
             </div>
             <div id="proxies-message" class="message"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="collapsible-header" onclick="toggleDebugTool()">
+            <h2>🔬 Debug Tool</h2>
+            <span id="debug-tool-icon" class="collapsible-icon collapsed">▼</span>
+        </div>
+        <div id="debug-tool-content" class="collapsible-content collapsed">
+            <p style="color: #888; margin-bottom: 10px;">Click a button to fetch and view API data:</p>
+            <div class="debug-controls">
+                <button class="debug-btn" onclick="fetchDebugData('config')">/configs</button>
+                <button class="debug-btn" onclick="fetchDebugData('global')">/proxies/GLOBAL</button>
+                <button class="debug-btn" onclick="fetchDebugData('proxies')">/proxies</button>
+                <button class="debug-btn" onclick="fetchDebugData('rules')">/rules</button>
+                <button class="debug-btn" onclick="fetchDebugData('connections')">/connections</button>
+                <button class="debug-btn" onclick="fetchDebugData('providers')">/providers/proxies</button>
+                <button class="debug-btn" onclick="checkCurrentChain()" style="border-color: #00d4aa; color: #00d4aa;">🔍 Check Current Chain</button>
+            </div>
+            <div id="debug-output" class="debug-output">
+                <pre class="debug-json"></pre>
+            </div>
+            <div id="debug-message" class="message"></div>
         </div>
     </div>
 
@@ -375,9 +1136,83 @@
         // Flag to prevent auto-refresh during testing
         let isTestingLatency = false;
         
+        
         // Get API base URL from localStorage or use default
         function getApiBase() {
             return localStorage.getItem('mihomo_api_url') || DEFAULT_API_BASE;
+        }
+        
+        // Get rules and analyze which proxy groups are used
+        async function getRulesInfo() {
+            try {
+                const data = await fetchAPI('/rules');
+                return data.rules || [];
+            } catch (error) {
+                return [];
+            }
+        }
+        
+        // Analyze rules to find which proxy groups are used
+        function analyzeRules(rules) {
+            const usedProxies = new Set();
+            
+            for (const rule of rules) {
+                // rule format: ["RULE_TYPE", "MATCH_VALUE", "PROXY_NAME"]
+                if (rule && rule.length >= 3) {
+                    const proxyName = rule[2];
+                    if (proxyName) {
+                        usedProxies.add(proxyName);
+                    }
+                }
+            }
+            
+            return Array.from(usedProxies);
+        }
+        
+        // Display rules info in the UI
+        async function displayRulesInfo() {
+            const container = document.getElementById('rules-info-container');
+            const listEl = document.getElementById('rules-info-list');
+            const countEl = document.getElementById('rules-info-count');
+            
+            try {
+                const rules = await getRulesInfo();
+                const usedProxies = analyzeRules(rules);
+                
+                if (usedProxies.length === 0) {
+                    container.style.display = 'none';
+                    return;
+                }
+                
+                // Check if we're in rule mode
+                const mode = await getMode();
+                if (mode !== 'rule') {
+                    container.style.display = 'none';
+                    return;
+                }
+                
+                container.style.display = 'block';
+                countEl.textContent = `(${usedProxies.length} groups)`;
+                
+                // Sort: GLOBAL/DIRECT last, others first
+                const sortedProxies = usedProxies.sort((a, b) => {
+                    const aIsSpecial = a === 'GLOBAL' || a === 'DIRECT' || a === 'REJECT';
+                    const bIsSpecial = b === 'GLOBAL' || b === 'DIRECT' || b === 'REJECT';
+                    if (aIsSpecial && !bIsSpecial) return 1;
+                    if (!aIsSpecial && bIsSpecial) return -1;
+                    return a.localeCompare(b);
+                });
+                
+                listEl.innerHTML = sortedProxies.map(name => {
+                    let className = 'rules-info-item';
+                    if (name === 'GLOBAL') className += ' global';
+                    if (name === 'DIRECT' || name === 'REJECT') className += ' direct';
+                    return `<span class="${className}">${name}</span>`;
+                }).join('');
+                
+            } catch (error) {
+                container.style.display = 'none';
+            }
         }
         
         // Save settings to localStorage
@@ -470,6 +1305,38 @@
             };
         }
 
+        // Get proxy details including delay
+        async function getProxyDetails(name) {
+            try {
+                const encodedName = encodeURIComponent(name);
+                const data = await fetchAPI(`/proxies/${encodedName}`);
+                // Delay can be in data.delay or in data.history[last].delay
+                let delay = data.delay;
+                if ((delay === undefined || delay === null) && data.history && data.history.length > 0) {
+                    delay = data.history[data.history.length - 1].delay;
+                }
+                return {
+                    name: data.name,
+                    type: data.type,
+                    now: data.now,
+                    delay: delay,
+                    history: data.history
+                };
+            } catch (error) {
+                return null;
+            }
+        }
+
+        async function getProxyGroup(name) {
+            const encodedName = encodeURIComponent(name);
+            const data = await fetchAPI(`/proxies/${encodedName}`);
+            return {
+                now: data.now,
+                type: data.type,
+                all: data.all
+            };
+        }
+
         async function getConnections() {
             const data = await fetchAPI('/connections');
             return data.connections || [];
@@ -481,27 +1348,398 @@
             return data.proxies || {};
         }
 
-        // Test latency for a specific proxy
-        async function testProxyLatency(proxyName, groupElement) {
-            // Find the proxy item by matching the decoded name
-            const proxyItems = groupElement.querySelectorAll('.proxy-item');
-            let latencyEl = null;
-            let proxyItem = null;
+        // Helper to get latency display info
+        function getLatencyDisplayInfo(proxyName, delay) {
+            // Use cached value if available (from user testing)
+            if (latencyCache[proxyName]) {
+                const cached = latencyCache[proxyName];
+                return {
+                    text: cached.delay === 'Error' ? 'Error' : `${cached.delay}ms`,
+                    class: cached.class
+                };
+            }
             
-            for (const item of proxyItems) {
-                const itemProxyName = decodeURIComponent(item.getAttribute('data-proxy'));
-                if (itemProxyName === proxyName) {
-                    proxyItem = item;
-                    latencyEl = item.querySelector('.proxy-latency');
+            // Use API delay value if available (check for valid number > 0)
+            if (typeof delay === 'number' && delay > 0) {
+                let latencyClass = 'good';
+                if (delay > 300) latencyClass = 'medium';
+                if (delay > 800) latencyClass = 'bad';
+                return {
+                    text: `${delay}ms`,
+                    class: latencyClass
+                };
+            }
+            
+            // Default: no data
+            return {
+                text: '-',
+                class: ''
+            };
+        }
+
+        // Resolve the actual server chain by following nested proxies
+        async function resolveServerChain(startProxy) {
+            const chain = [];
+            let current = startProxy;
+            const visited = new Set();
+            
+            while (current && !visited.has(current)) {
+                visited.add(current);
+                chain.push(current);
+                
+                // Get details of current proxy
+                try {
+                    const encodedName = encodeURIComponent(current);
+                    const data = await fetchAPI(`/proxies/${encodedName}`);
+                    
+                    // If this is a Selector/URLTest and has a 'now' value, follow it
+                    if (data && data.now && data.now !== current) {
+                        // Check if 'now' is in the 'all' list (it's a child proxy)
+                        if (data.all && data.all.includes(data.now)) {
+                            current = data.now;
+                        } else {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                } catch (error) {
                     break;
                 }
             }
             
-            if (latencyEl) {
-                latencyEl.textContent = 'Testing...';
-                latencyEl.className = 'proxy-latency testing';
-            }
+            return chain;
+        }
 
+        // Toggle proxy tree group expansion
+        function toggleProxyTreeGroup(groupId) {
+            const content = document.getElementById(`proxy-tree-children-${groupId}`);
+            const toggle = document.getElementById(`proxy-tree-toggle-${groupId}`);
+            const header = toggle?.closest('.proxy-tree-group-header, .proxy-tree-subgroup-header');
+            
+            if (content && toggle) {
+                const isCollapsed = content.classList.toggle('collapsed');
+                toggle.classList.toggle('collapsed');
+                
+                // Update toggle arrow direction
+                toggle.textContent = isCollapsed ? '▶' : '▼';
+                
+                // Update header expanded state for top-level groups
+                if (header && header.classList.contains('proxy-tree-group-header')) {
+                    header.classList.toggle('expanded', !isCollapsed);
+                }
+            }
+        }
+
+        // Render proxy selection buttons dynamically - Hierarchical Tree View
+        async function renderProxySelectionButtons(globalProxy) {
+            const container = document.getElementById('proxy-selection-buttons');
+            
+            if (!container) return;
+            
+            if (!globalProxy || !globalProxy.all) {
+                container.innerHTML = '<div style="color: #888;">No proxies available</div>';
+                return;
+            }
+            
+            // Update current proxy group display
+            const currentGroupEl = document.getElementById('current-proxy-group');
+            if (currentGroupEl) {
+                currentGroupEl.textContent = globalProxy.now || 'N/A';
+            }
+            
+            // Resolve and display the actual server chain
+            const chainEl = document.getElementById('current-server-chain');
+            if (chainEl && globalProxy.now) {
+                const chain = await resolveServerChain(globalProxy.now);
+                if (chain.length > 1) {
+                    chainEl.innerHTML = chain.join(' → ');
+                } else {
+                    chainEl.textContent = chain[0] || 'N/A';
+                }
+            }
+            
+            // Get emoji and label for common proxy names
+            function getProxyDisplayInfo(name) {
+                const lower = name.toLowerCase();
+                if (name === 'DIRECT') return { emoji: '➡️', label: 'DIRECT' };
+                if (lower.includes('singapore') || lower.includes('sg')) return { emoji: '🇸🇬', label: name };
+                if (lower.includes('tokyo') || lower.includes('jp') || lower.includes('japan')) return { emoji: '🇯🇵', label: name };
+                if (lower.includes('hongkong') || lower.includes('hk') || lower.includes('hong kong')) return { emoji: '🇭🇰', label: name };
+                if (lower.includes('california') || lower.includes('ca') || lower.includes('us') || lower.includes('usa') || lower.includes('america')) return { emoji: '🇺🇸', label: name };
+                if (lower.includes('gfw') || lower.includes('翻墙') || lower.includes('airport')) return { emoji: '✈️', label: name };
+                if (lower.includes('auto') || lower.includes('自动')) return { emoji: '⚙️', label: name };
+                if (lower.includes('select') || lower.includes('选择')) return { emoji: '📐', label: name };
+                return { emoji: '🌐', label: name };
+            }
+            
+            // Fetch all proxy details from the API
+            const allProxies = await getProxyGroups();
+            const groupTypes = ['Selector', 'URLTest', 'LoadBalance', 'Fallback'];
+            
+            // Helper: Check if a proxy is a group
+            const isGroup = (name) => {
+                const proxy = allProxies[name];
+                return proxy && groupTypes.includes(proxy.type);
+            };
+            
+            // Helper: Get proxy type
+            const getProxyType = (name) => {
+                if (name === 'DIRECT') return 'Direct';
+                const proxy = allProxies[name];
+                return proxy?.type || 'Proxy';
+            };
+            
+            // Helper: Get proxy delay
+            const getProxyDelay = (name) => {
+                if (name === 'DIRECT') return null;
+                const proxy = allProxies[name];
+                if (!proxy) return null;
+                let delay = proxy.delay;
+                if ((delay === undefined || delay === null) && proxy.history && proxy.history.length > 0) {
+                    delay = proxy.history[proxy.history.length - 1].delay;
+                }
+                return delay;
+            };
+            
+            // Helper: Get children of a group
+            const getGroupChildren = (name) => {
+                const proxy = allProxies[name];
+                return proxy?.all || [];
+            };
+            
+            // Render a leaf proxy (individual server)
+            const renderLeafProxy = (proxyName, indent = 0) => {
+                const display = getProxyDisplayInfo(proxyName);
+                const isActive = globalProxy.now === proxyName;
+                const delay = getProxyDelay(proxyName);
+                const latency = getLatencyDisplayInfo(proxyName, delay);
+                const type = getProxyType(proxyName);
+                const marginStyle = indent > 0 ? `margin-left: ${16 + indent * 12}px;` : 'margin-left: 16px;';
+                
+                return `
+                    <div class="proxy-tree-leaf ${isActive ? 'selected' : ''}" style="${marginStyle}" data-proxy-name="${encodeURIComponent(proxyName)}">
+                        <span class="proxy-tree-leaf-icon">${display.emoji}</span>
+                        <span class="proxy-tree-leaf-name" onclick="setProxy('${proxyName.replace(/'/g, "\\'")}')" title="${display.label}">${display.label}</span>
+                        <span class="proxy-tree-leaf-type">${type}</span>
+                        <span class="proxy-tree-leaf-latency ${latency.class}" data-latency-for="${encodeURIComponent(proxyName)}">${latency.text}</span>
+                        <button class="proxy-tree-leaf-test" onclick="testSingleProxySelectionLatency('${proxyName.replace(/'/g, "\\'")}')" data-test-for="${encodeURIComponent(proxyName)}">🧪 Test</button>
+                    </div>
+                `;
+            };
+            
+            // Render a sub-group (nested proxy group) - COLLAPSED by default
+            const renderSubGroup = (groupName, indent = 0) => {
+                const display = getProxyDisplayInfo(groupName);
+                const isActive = globalProxy.now === groupName;
+                const proxy = allProxies[groupName];
+                const children = getGroupChildren(groupName);
+                const groupId = encodeURIComponent(groupName).replace(/%/g, '_');
+                const marginStyle = indent > 0 ? `margin-left: ${8 + indent * 6}px;` : '';
+                
+                // Get latency for group's selected proxy (now)
+                const nowProxyName = proxy?.now;
+                const nowProxyDelay = nowProxyName ? getProxyDelay(nowProxyName) : null;
+                const nowLatency = nowProxyName ? getLatencyDisplayInfo(nowProxyName, nowProxyDelay) : { text: '-', class: '' };
+                
+                // Recursively render children
+                let childrenHtml = '';
+                for (const childName of children) {
+                    if (isGroup(childName)) {
+                        childrenHtml += renderSubGroup(childName, indent + 1);
+                    } else {
+                        childrenHtml += renderLeafProxy(childName, indent + 1);
+                    }
+                }
+                
+                return `
+                    <div class="proxy-tree-subgroup" style="${marginStyle}">
+                        <div class="proxy-tree-subgroup-header ${isActive ? 'selected' : ''}" data-proxy-name="${encodeURIComponent(groupName)}" onclick="setProxy('${groupName.replace(/'/g, "\\'")}')">
+                            <span class="proxy-tree-toggle collapsed" id="proxy-tree-toggle-${groupId}" onclick="event.stopPropagation(); toggleProxyTreeGroup('${groupId}')">▶</span>
+                            <span class="proxy-tree-subgroup-icon">📁</span>
+                            <span class="proxy-tree-subgroup-name" title="${display.label}">${display.emoji} ${display.label}</span>
+                            <span style="font-size: 9px; color: #888; white-space: nowrap;">${proxy?.type || 'Group'}</span>
+                            <span class="proxy-tree-leaf-latency ${nowLatency.class}" style="margin-right: 4px;" title="Latency of selected proxy: ${nowProxyName || 'None'}" data-latency-for="${encodeURIComponent(groupName)}">${nowLatency.text}</span>
+                            <button class="proxy-tree-group-test" onclick="event.stopPropagation(); testGroupLatency('${groupName.replace(/'/g, "\\'")}')" data-test-for="${encodeURIComponent(groupName)}">🧪 Test</button>
+                        </div>
+                        <div class="proxy-tree-subgroup-children collapsed" id="proxy-tree-children-${groupId}">
+                            ${childrenHtml}
+                        </div>
+                    </div>
+                `;
+            };
+            
+            // Render a top-level group - COLLAPSED by default
+            const renderTopLevelGroup = (groupName) => {
+                const display = getProxyDisplayInfo(groupName);
+                const isActive = globalProxy.now === groupName;
+                const proxy = allProxies[groupName];
+                const children = getGroupChildren(groupName);
+                const groupId = encodeURIComponent(groupName).replace(/%/g, '_');
+                
+                // Get latency for group's selected proxy (now)
+                const nowProxyName = proxy?.now;
+                const nowProxyDelay = nowProxyName ? getProxyDelay(nowProxyName) : null;
+                const nowLatency = nowProxyName ? getLatencyDisplayInfo(nowProxyName, nowProxyDelay) : { text: '-', class: '' };
+                
+                // Render children
+                let childrenHtml = '';
+                for (const childName of children) {
+                    if (isGroup(childName)) {
+                        childrenHtml += renderSubGroup(childName);
+                    } else {
+                        childrenHtml += renderLeafProxy(childName);
+                    }
+                }
+                
+                return `
+                    <div class="proxy-tree-group">
+                        <div class="proxy-tree-group-header ${isActive ? 'selected' : ''}" data-proxy-name="${encodeURIComponent(groupName)}" onclick="setProxy('${groupName.replace(/'/g, "\\'")}')">
+                            <span class="proxy-tree-toggle collapsed" id="proxy-tree-toggle-${groupId}" onclick="event.stopPropagation(); toggleProxyTreeGroup('${groupId}')">▶</span>
+                            <span class="proxy-tree-group-icon">📁</span>
+                            <div class="proxy-tree-group-info">
+                                <div class="proxy-tree-group-name" title="${display.label}">${display.emoji} ${display.label}</div>
+                                <div class="proxy-tree-group-meta">${proxy?.type || 'Group'} • ${children.length} items • Now: ${nowProxyName || 'None'}</div>
+                            </div>
+                            <span class="proxy-tree-leaf-latency ${nowLatency.class}" style="margin-right: 8px; font-size: 11px; padding: 2px 8px;" title="Latency of selected proxy" data-latency-for="${encodeURIComponent(groupName)}">${nowLatency.text}</span>
+                            <button class="proxy-tree-group-test" onclick="event.stopPropagation(); testGroupLatency('${groupName.replace(/'/g, "\\'")}')" data-test-for="${encodeURIComponent(groupName)}">🧪 Test</button>
+                        </div>
+                        <div class="proxy-tree-children collapsed" id="proxy-tree-children-${groupId}">
+                            ${childrenHtml}
+                        </div>
+                    </div>
+                `;
+            };
+            
+            // Render a standalone proxy (not in any group)
+            const renderStandaloneProxy = (proxyName) => {
+                const display = getProxyDisplayInfo(proxyName);
+                const isActive = globalProxy.now === proxyName;
+                const delay = getProxyDelay(proxyName);
+                const latency = getLatencyDisplayInfo(proxyName, delay);
+                const type = getProxyType(proxyName);
+                
+                return `
+                    <div class="proxy-tree-standalone ${isActive ? 'selected' : ''}" data-proxy-name="${encodeURIComponent(proxyName)}">
+                        <div class="proxy-tree-leaf">
+                            <span class="proxy-tree-leaf-icon">${display.emoji}</span>
+                            <span class="proxy-tree-leaf-name" onclick="setProxy('${proxyName.replace(/'/g, "\\'")}')" title="${display.label}">${display.label}</span>
+                            <span class="proxy-tree-leaf-type">${type}</span>
+                            <span class="proxy-tree-leaf-latency ${latency.class}" data-latency-for="${encodeURIComponent(proxyName)}">${latency.text}</span>
+                            ${proxyName !== 'DIRECT' ? `<button class="proxy-tree-leaf-test" onclick="testSingleProxySelectionLatency('${proxyName.replace(/'/g, "\\'")}')" data-test-for="${encodeURIComponent(proxyName)}">🧪 Test</button>` : '<span></span>'}
+                        </div>
+                    </div>
+                `;
+            };
+            
+            // Build the tree
+            let html = '<div class="proxy-tree">';
+            
+            // Separate top-level groups and standalone proxies
+            const topLevelGroups = [];
+            const standaloneProxies = [];
+            
+            for (const proxyName of globalProxy.all) {
+                if (isGroup(proxyName)) {
+                    topLevelGroups.push(proxyName);
+                } else {
+                    standaloneProxies.push(proxyName);
+                }
+            }
+            
+            // Render top-level groups
+            for (const groupName of topLevelGroups) {
+                html += renderTopLevelGroup(groupName);
+            }
+            
+            // Render standalone proxies section
+            if (standaloneProxies.length > 0) {
+                html += `
+                    <div class="proxy-tree-standalone-section">
+                        <div class="proxy-tree-standalone-header">
+                            <span>🌐 Standalone (${standaloneProxies.length})</span>
+                            <div></div>
+                        </div>
+                `;
+                for (const proxyName of standaloneProxies) {
+                    html += renderStandaloneProxy(proxyName);
+                }
+                html += '</div>'; // Close standalone section
+            }
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // Test latency for a single group (test its 'now' node)
+        async function testGroupLatency(groupName) {
+            const allProxies = await getProxyGroups();
+            const group = allProxies[groupName];
+            
+            if (!group || !group.now) {
+                showMessage('proxy-message', `❌ Group ${groupName} has no selected proxy`, true);
+                return;
+            }
+            
+            const targetName = group.now;
+            const badge = document.querySelector(`#proxy-selection-buttons [data-latency-for="${encodeURIComponent(groupName)}"]`);
+            const testBtn = document.querySelector(`#proxy-selection-buttons [data-test-for="${encodeURIComponent(groupName)}"]`);
+            
+            if (badge) {
+                badge.textContent = '...';
+                badge.className = 'proxy-tree-leaf-latency testing';
+            }
+            if (testBtn) {
+                testBtn.textContent = 'Testing...';
+                testBtn.disabled = true;
+            }
+            
+            try {
+                const encodedName = encodeURIComponent(targetName);
+                const result = await fetchAPI(`/proxies/${encodedName}/delay?url=http://www.gstatic.com/generate_204&timeout=5000`);
+                
+                const delay = result.delay;
+                let latencyClass = 'good';
+                if (delay > 300) latencyClass = 'medium';
+                if (delay > 800) latencyClass = 'bad';
+                
+                latencyCache[groupName] = { delay, class: latencyClass };
+                
+                if (badge) {
+                    badge.textContent = `${delay}ms`;
+                    badge.className = `proxy-tree-leaf-latency ${latencyClass}`;
+                }
+                
+                showMessage('proxy-message', `✅ ${groupName}: ${delay}ms (via ${targetName})`);
+            } catch (error) {
+                latencyCache[groupName] = { delay: 'Error', class: 'bad' };
+                if (badge) {
+                    badge.textContent = 'Error';
+                    badge.className = 'proxy-tree-leaf-latency bad';
+                }
+                showMessage('proxy-message', `❌ ${groupName}: Test failed`, true);
+            } finally {
+                if (testBtn) {
+                    testBtn.textContent = '🧪 Test';
+                    testBtn.disabled = false;
+                }
+            }
+        }
+
+        // Test latency for a single proxy in the proxy selection section
+        async function testSingleProxySelectionLatency(proxyName) {
+            const badge = document.querySelector(`#proxy-selection-buttons [data-latency-for="${encodeURIComponent(proxyName)}"]`);
+            const testBtn = document.querySelector(`#proxy-selection-buttons [data-test-for="${encodeURIComponent(proxyName)}"]`);
+            
+            if (badge) {
+                badge.textContent = '...';
+                badge.className = 'proxy-tree-leaf-latency testing';
+            }
+            if (testBtn) {
+                testBtn.textContent = 'Testing...';
+                testBtn.disabled = true;
+            }
+            
             try {
                 const encodedName = encodeURIComponent(proxyName);
                 const result = await fetchAPI(`/proxies/${encodedName}/delay?url=http://www.gstatic.com/generate_204&timeout=5000`);
@@ -511,124 +1749,430 @@
                 if (delay > 300) latencyClass = 'medium';
                 if (delay > 800) latencyClass = 'bad';
                 
-                // Cache the result
                 latencyCache[proxyName] = { delay, class: latencyClass };
                 
-                if (latencyEl) {
-                    latencyEl.textContent = `${delay}ms`;
-                    latencyEl.className = `proxy-latency ${latencyClass}`;
+                if (badge) {
+                    badge.textContent = `${delay}ms`;
+                    badge.className = `proxy-tree-leaf-latency ${latencyClass}`;
                 }
+                
+                showMessage('proxy-message', `✅ ${proxyName}: ${delay}ms`);
             } catch (error) {
-                // Cache the error state
                 latencyCache[proxyName] = { delay: 'Error', class: 'bad' };
-                if (latencyEl) {
-                    latencyEl.textContent = 'Error';
-                    latencyEl.className = 'proxy-latency bad';
+                if (badge) {
+                    badge.textContent = 'Error';
+                    badge.className = 'proxy-tree-leaf-latency bad';
                 }
-            }
-        }
-
-        // Set testing state for all proxies in a group
-        function setGroupTestingState(groupEl) {
-            const latencyEls = groupEl.querySelectorAll('.proxy-latency');
-            latencyEls.forEach(el => {
-                el.textContent = 'Testing...';
-                el.className = 'proxy-latency testing';
-            });
-        }
-
-        // Test all proxies in a group
-        async function testGroupLatency(groupName, skipSetTesting = false) {
-            const groups = await getProxyGroups();
-            const group = groups[groupName];
-            if (!group || !group.all) return;
-
-            // Find the group element by matching decoded name
-            const allGroupEls = document.querySelectorAll('.proxy-group');
-            let groupEl = null;
-            for (const el of allGroupEls) {
-                const elGroupName = decodeURIComponent(el.getAttribute('data-group-name'));
-                if (elGroupName === groupName) {
-                    groupEl = el;
-                    break;
-                }
-            }
-            if (!groupEl) return;
-
-            // Set all proxies to testing state first (only if not already set by caller)
-            if (!skipSetTesting) {
-                setGroupTestingState(groupEl);
-            }
-
-            // Test each proxy sequentially to avoid overwhelming the API
-            for (const proxyName of group.all) {
-                await testProxyLatency(proxyName, groupEl);
-                // Small delay between tests
-                await new Promise(r => setTimeout(r, 100));
-            }
-        }
-
-        // Set testing state for all proxies in all groups
-        function setAllTestingState() {
-            const latencyEls = document.querySelectorAll('.proxy-latency');
-            latencyEls.forEach(el => {
-                el.textContent = 'Testing...';
-                el.className = 'proxy-latency testing';
-            });
-        }
-
-        // Test all proxies in all groups
-        async function testAllLatency() {
-            const btn = document.querySelector('.test-all-btn');
-            btn.disabled = true;
-            btn.textContent = 'Testing...';
-            isTestingLatency = true; // Prevent auto-refresh
-
-            try {
-                const groups = await getProxyGroups();
-                const groupNames = Object.keys(groups).filter(name => 
-                    groups[name].type === 'Selector' || groups[name].type === 'URLTest' || groups[name].type === 'LoadBalance'
-                );
-
-                // Set all to testing state immediately
-                setAllTestingState();
-
-                for (const groupName of groupNames) {
-                    await testGroupLatency(groupName, true); // skipSetTesting = true
-                }
-
-                showMessage('proxies-message', '✅ All latency tests completed');
-            } catch (error) {
-                showMessage('proxies-message', `❌ Error: ${error.message}`, true);
+                showMessage('proxy-message', `❌ ${proxyName}: Test failed`, true);
             } finally {
-                isTestingLatency = false; // Re-enable auto-refresh
-                btn.disabled = false;
-                btn.textContent = '🚀 Test All Latency';
+                if (testBtn) {
+                    testBtn.textContent = '🧪 Test';
+                    testBtn.disabled = false;
+                }
             }
         }
 
-        // Select a proxy in a group
-        async function selectProxy(groupName, proxyName) {
+        // Helper: Collect all leaf proxies from a group recursively
+        function collectLeafProxies(groupName, allProxies, groupTypes) {
+            const proxy = allProxies[groupName];
+            if (!proxy || !proxy.all) return [];
+            
+            const leaves = [];
+            for (const childName of proxy.all) {
+                const child = allProxies[childName];
+                if (!child) continue;
+                
+                if (groupTypes.includes(child.type)) {
+                    // Recursively collect from sub-groups
+                    leaves.push(...collectLeafProxies(childName, allProxies, groupTypes));
+                } else if (childName !== 'DIRECT') {
+                    // It's a leaf proxy
+                    leaves.push(childName);
+                }
+            }
+            return leaves;
+        }
+
+        // Helper: Update test progress UI
+        function updateTestProgress(completed, total, currentName, results) {
+            const progressBar = document.getElementById('test-progress-bar');
+            const progressContainer = document.getElementById('test-progress-container');
+            const statusBar = document.getElementById('test-status-bar');
+            const countEl = document.getElementById('test-status-count');
+            const nameEl = document.getElementById('test-status-name');
+            
+            const percent = total > 0 ? (completed / total) * 100 : 0;
+            
+            progressContainer.classList.add('active');
+            statusBar.classList.remove('hidden');
+            progressBar.style.width = `${percent}%`;
+            countEl.textContent = `${completed}/${total}`;
+            nameEl.textContent = currentName ? `• ${currentName}` : '';
+            
+            // Update results summary
+            document.getElementById('test-result-good').textContent = `● ${results.good}`;
+            document.getElementById('test-result-medium').textContent = `● ${results.medium}`;
+            document.getElementById('test-result-bad').textContent = `● ${results.bad + results.error}`;
+        }
+
+        // Helper: Reset test UI
+        function resetTestUI() {
+            document.getElementById('test-progress-container').classList.remove('active');
+            document.getElementById('test-status-bar').classList.add('hidden');
+            document.getElementById('test-progress-bar').style.width = '0%';
+            document.getElementById('test-all-btn').disabled = false;
+            document.getElementById('test-groups-btn').disabled = false;
+        }
+
+        // Test latency for all proxies in GLOBAL group (including nested ones and groups)
+        async function testAllProxiesLatency() {
+            const proxy = await getGlobalProxy();
+            
+            if (!proxy || !proxy.all || proxy.all.length === 0) {
+                showMessage('proxy-message', '❌ No proxies to test', true);
+                return;
+            }
+            
+            // Get all proxies from the API
+            const allProxies = await getProxyGroups();
+            const groupTypes = ['Selector', 'URLTest', 'LoadBalance', 'Fallback'];
+            
+            // Collect all items to test: leaf proxies AND groups (test their 'now' node)
+            const proxiesToTest = [];
+            const groupsToTest = [];
+            
+            for (const name of proxy.all) {
+                if (name === 'DIRECT') continue;
+                const p = allProxies[name];
+                if (!p) continue;
+                
+                if (groupTypes.includes(p.type)) {
+                    // It's a group - add to groups list (we'll test its 'now' node)
+                    groupsToTest.push(name);
+                    // Also collect leaf proxies from this group
+                    proxiesToTest.push(...collectLeafProxies(name, allProxies, groupTypes));
+                } else {
+                    // It's a leaf proxy
+                    proxiesToTest.push(name);
+                }
+            }
+            
+            // Remove duplicates from leaf proxies
+            const uniqueProxies = [...new Set(proxiesToTest)];
+            // Combine: test leaf proxies + groups (for group's now node)
+            const allItemsToTest = [...uniqueProxies, ...groupsToTest];
+            const total = allItemsToTest.length;
+            
+            if (total === 0) {
+                showMessage('proxy-message', '❌ No testable proxies found', true);
+                return;
+            }
+            
+            // Disable buttons during test
+            document.getElementById('test-all-btn').disabled = true;
+            document.getElementById('test-groups-btn').disabled = true;
+            isTestingLatency = true;
+            
+            // Initialize results counter
+            const results = { good: 0, medium: 0, bad: 0, error: 0 };
+            updateTestProgress(0, total, '', results);
+            
+            // Set all to testing state
+            allItemsToTest.forEach(itemName => {
+                const badge = document.querySelector(`#proxy-selection-buttons [data-latency-for="${encodeURIComponent(itemName)}"]`);
+                if (badge) {
+                    badge.textContent = '...';
+                    badge.className = 'proxy-tree-leaf-latency testing';
+                }
+            });
+            
+            // Test each item sequentially
+            let completed = 0;
+            for (const itemName of allItemsToTest) {
+                updateTestProgress(completed, total, itemName, results);
+                
+                const badge = document.querySelector(`#proxy-selection-buttons [data-latency-for="${encodeURIComponent(itemName)}"]`);
+                if (badge) {
+                    badge.textContent = 'Testing...';
+                    badge.className = 'proxy-tree-leaf-latency testing';
+                }
+                
+                // Determine what to test: if it's a group, test its 'now' node
+                const p = allProxies[itemName];
+                const isGroup = p && groupTypes.includes(p.type);
+                const targetName = isGroup && p.now ? p.now : itemName;
+                
+                try {
+                    const encodedName = encodeURIComponent(targetName);
+                    const result = await fetchAPI(`/proxies/${encodedName}/delay?url=http://www.gstatic.com/generate_204&timeout=5000`);
+                    
+                    const delay = result.delay;
+                    let latencyClass = 'good';
+                    if (delay > 300) latencyClass = 'medium';
+                    if (delay > 800) latencyClass = 'bad';
+                    
+                    // Cache under the original item name (group name or proxy name)
+                    latencyCache[itemName] = { delay, class: latencyClass };
+                    results[latencyClass]++;
+                    
+                    if (badge) {
+                        badge.textContent = `${delay}ms`;
+                        badge.className = `proxy-tree-leaf-latency ${latencyClass}`;
+                    }
+                } catch (error) {
+                    latencyCache[itemName] = { delay: 'Error', class: 'bad' };
+                    results.error++;
+                    if (badge) {
+                        badge.textContent = 'Error';
+                        badge.className = `proxy-tree-leaf-latency bad`;
+                    }
+                }
+                
+                completed++;
+            }
+            
+            updateTestProgress(completed, total, '', results);
+            isTestingLatency = false;
+            
+            setTimeout(() => {
+                resetTestUI();
+                showMessage('proxy-message', `✅ Tested ${total} proxies: ${results.good} good, ${results.medium} medium, ${results.bad + results.error} slow/error`);
+            }, 1000);
+        }
+
+        // Test latency of all proxy groups (test their 'now' nodes)
+        async function testGroupsLatency() {
+            const allProxies = await getProxyGroups();
+            const groupTypes = ['Selector', 'URLTest', 'LoadBalance', 'Fallback'];
+            
+            // Get GLOBAL proxy to find all top-level groups
+            const globalProxy = await getGlobalProxy();
+            
+            // Collect all groups (top-level and nested)
+            const groupsToTest = new Set();
+            
+            function collectGroups(groupName) {
+                const proxy = allProxies[groupName];
+                if (!proxy || !groupTypes.includes(proxy.type)) return;
+                
+                groupsToTest.add(groupName);
+                
+                // Recursively collect sub-groups
+                if (proxy.all) {
+                    for (const childName of proxy.all) {
+                        collectGroups(childName);
+                    }
+                }
+            }
+            
+            // Start from GLOBAL's children
+            if (globalProxy && globalProxy.all) {
+                for (const name of globalProxy.all) {
+                    collectGroups(name);
+                }
+            }
+            
+            const uniqueGroups = Array.from(groupsToTest);
+            const total = uniqueGroups.length;
+            
+            if (total === 0) {
+                showMessage('proxy-message', '❌ No proxy groups found', true);
+                return;
+            }
+            
+            // Disable buttons during test
+            document.getElementById('test-all-btn').disabled = true;
+            document.getElementById('test-groups-btn').disabled = true;
+            isTestingLatency = true;
+            
+            // Initialize results counter
+            const results = { good: 0, medium: 0, bad: 0, error: 0 };
+            updateTestProgress(0, total, '', results);
+            
+            // Set all to testing state
+            uniqueGroups.forEach(groupName => {
+                const badge = document.querySelector(`#proxy-selection-buttons [data-latency-for="${encodeURIComponent(groupName)}"]`);
+                if (badge) {
+                    badge.textContent = '...';
+                    badge.className = 'proxy-tree-leaf-latency testing';
+                }
+            });
+            
+            // Test each group by testing its 'now' node
+            let completed = 0;
+            for (const groupName of uniqueGroups) {
+                updateTestProgress(completed, total, groupName, results);
+                
+                const badge = document.querySelector(`#proxy-selection-buttons [data-latency-for="${encodeURIComponent(groupName)}"]`);
+                if (badge) {
+                    badge.textContent = 'Testing...';
+                    badge.className = 'proxy-tree-leaf-latency testing';
+                }
+                
+                // Get the group's selected proxy (now)
+                const group = allProxies[groupName];
+                const targetName = group?.now;
+                
+                if (!targetName) {
+                    // Group has no selected proxy
+                    latencyCache[groupName] = { delay: 'Error', class: 'bad' };
+                    results.error++;
+                    if (badge) {
+                        badge.textContent = 'Error';
+                        badge.className = `proxy-tree-leaf-latency bad`;
+                    }
+                    completed++;
+                    continue;
+                }
+                
+                try {
+                    const encodedName = encodeURIComponent(targetName);
+                    const result = await fetchAPI(`/proxies/${encodedName}/delay?url=http://www.gstatic.com/generate_204&timeout=5000`);
+                    
+                    const delay = result.delay;
+                    let latencyClass = 'good';
+                    if (delay > 300) latencyClass = 'medium';
+                    if (delay > 800) latencyClass = 'bad';
+                    
+                    // Cache under the group name
+                    latencyCache[groupName] = { delay, class: latencyClass };
+                    results[latencyClass]++;
+                    
+                    if (badge) {
+                        badge.textContent = `${delay}ms`;
+                        badge.className = `proxy-tree-leaf-latency ${latencyClass}`;
+                    }
+                } catch (error) {
+                    latencyCache[groupName] = { delay: 'Error', class: 'bad' };
+                    results.error++;
+                    if (badge) {
+                        badge.textContent = 'Error';
+                        badge.className = `proxy-tree-leaf-latency bad`;
+                    }
+                }
+                
+                completed++;
+            }
+            
+            updateTestProgress(completed, total, '', results);
+            isTestingLatency = false;
+            
+            setTimeout(() => {
+                resetTestUI();
+                showMessage('proxy-message', `✅ Tested ${total} groups: ${results.good} good, ${results.medium} medium, ${results.bad + results.error} slow/error`);
+            }, 1000);
+        }
+
+        function showMessage(id, text, isError = false) {
+            const el = document.getElementById(id);
+            el.textContent = text;
+            el.className = 'message ' + (isError ? 'error' : 'success');
+            setTimeout(() => {
+                el.className = 'message';
+            }, 3000);
+        }
+
+        async function refreshAll() {
+            const API_BASE = getApiBase();
             try {
-                await fetchAPI(`/proxies/${encodeURIComponent(groupName)}`, {
+                // Get mode
+                const mode = await getMode();
+                document.getElementById('mode-rule').className = mode === 'rule' ? 'active' : '';
+                document.getElementById('mode-global').className = mode === 'global' ? 'active' : '';
+                document.getElementById('mode-direct').className = mode === 'direct' ? 'active' : '';
+
+                // Get proxy and update UI
+                const proxy = await getGlobalProxy();
+                await renderProxySelectionButtons(proxy);
+                
+                // Update rules info (only show in rule mode)
+                await displayRulesInfo();
+
+                // Get connections
+                const connections = await getConnections();
+                const connDiv = document.getElementById('connections');
+                if (connections.length === 0) {
+                    connDiv.innerHTML = '<div style="color: #888; text-align: center;">No active connections</div>';
+                } else {
+                    connDiv.innerHTML = connections.slice(0, 20).map(c => {
+                        const chains = c.chains ? c.chains.join(' → ') : 'N/A';
+                        return `
+                            <div class="connection-item">
+                                <div class="host">${c.metadata?.host || 'Unknown'}</div>
+                                <div class="chain">${chains}</div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+                // Refresh advanced view if expanded (skip if testing latency)
+                const advancedContent = document.getElementById('advanced-view-content');
+                if (!isTestingLatency && !advancedContent.classList.contains('collapsed')) {
+                    await renderAdvancedView();
+                }
+
+            } catch (error) {
+                document.getElementById('connections').innerHTML = `
+                    <div style="color: #e94560; text-align: center;">
+                        ❌ Error: ${error.message}<br>
+                        <small>Make sure mihomo is running on ${API_BASE}</small>
+                    </div>
+                `;
+            }
+        }
+
+        async function setMode(mode) {
+            try {
+                const response = await fetchAPI('/configs', {
+                    method: 'PATCH',
+                    body: JSON.stringify({ mode: mode })
+                });
+                showMessage('mode-message', `✅ Mode changed to: ${mode}`);
+                await refreshAll();
+            } catch (error) {
+                showMessage('mode-message', `❌ Error: ${error.message}`, true);
+            }
+        }
+
+        async function setProxy(proxyName) {
+            try {
+                const response = await fetchAPI('/proxies/GLOBAL', {
                     method: 'PUT',
                     body: JSON.stringify({ name: proxyName })
                 });
-                showMessage('proxies-message', `✅ Selected ${proxyName} in ${groupName}`);
-                await renderProxyGroups();
+                showMessage('proxy-message', `✅ Proxy changed to: ${proxyName}`);
                 await refreshAll();
             } catch (error) {
-                showMessage('proxies-message', `❌ Error: ${error.message}`, true);
+                showMessage('proxy-message', `❌ Error: ${error.message}`, true);
             }
         }
 
-        // Render proxy groups
-        async function renderProxyGroups() {
+        // Auto refresh every 5 seconds
+        setInterval(refreshAll, 5000);
+
+        // Toggle advanced view
+        function toggleAdvancedView() {
+            const content = document.getElementById('advanced-view-content');
+            const icon = document.getElementById('advanced-view-icon');
+            const isCollapsed = content.classList.contains('collapsed');
+            
+            if (isCollapsed) {
+                content.classList.remove('collapsed');
+                icon.classList.remove('collapsed');
+                renderAdvancedView();
+            } else {
+                content.classList.add('collapsed');
+                icon.classList.add('collapsed');
+            }
+        }
+
+        // Render advanced view (all proxy groups)
+        async function renderAdvancedView() {
             try {
                 const groups = await getProxyGroups();
                 const container = document.getElementById('proxy-groups');
                 
-                // Filter out non-group proxies (like individual servers)
+                // Filter out non-group proxies
                 const groupNames = Object.keys(groups).filter(name => {
                     const type = groups[name].type;
                     return type === 'Selector' || type === 'URLTest' || type === 'LoadBalance' || type === 'Fallback';
@@ -655,16 +2199,13 @@
                             <div class="proxy-list">
                                 ${allProxies.map(proxyName => {
                                     const cached = latencyCache[proxyName];
-                                    const latencyText = cached ? `${cached.delay}ms` : '-';
-                                    const latencyClass = cached ? cached.class : 'testing';
+                                    const latencyText = cached ? (cached.delay === 'Error' ? 'Error' : `${cached.delay}ms`) : '-';
+                                    const latencyClass = cached ? cached.class : '';
                                     return `
                                     <div class="proxy-item ${group.now === proxyName ? 'selected' : ''}" data-proxy="${encodeURIComponent(proxyName)}">
                                         <span class="proxy-name">${proxyName}</span>
-                                        <div class="proxy-actions">
-                                            <span class="proxy-latency ${latencyClass}">${latencyText}</span>
-                                            <button class="small" onclick="selectProxy('${groupName.replace(/'/g, "\\'")}', '${proxyName.replace(/'/g, "\\'")}')">Select</button>
-                                            <button class="small" onclick="event.stopPropagation(); testProxyLatency('${proxyName.replace(/'/g, "\\'")}', this.closest('.proxy-group'))">Test</button>
-                                        </div>
+                                        <span class="proxy-latency ${latencyClass}" data-latency-for="${encodeURIComponent(proxyName)}">${latencyText}</span>
+                                        <button class="small" onclick="testSingleProxyLatency('${proxyName.replace(/'/g, "\\'")}')">Test</button>
                                     </div>
                                 `}).join('')}
                             </div>
@@ -681,173 +2222,245 @@
             }
         }
 
-        function showMessage(id, text, isError = false) {
-            const el = document.getElementById(id);
-            el.textContent = text;
-            el.className = 'message ' + (isError ? 'error' : 'success');
-            setTimeout(() => {
-                el.className = 'message';
-            }, 3000);
-        }
-
-        async function refreshAll() {
-            const API_BASE = getApiBase();
+        // Test a single proxy in advanced view and update its display
+        async function testSingleProxyLatency(proxyName) {
+            const badge = document.querySelector(`#proxy-groups [data-latency-for="${encodeURIComponent(proxyName)}"]`);
+            
+            if (badge) {
+                badge.textContent = 'Testing...';
+                badge.className = 'proxy-latency testing';
+            }
+            
             try {
-                // Get mode
-                const mode = await getMode();
-                document.getElementById('mode-rule').className = mode === 'rule' ? 'active' : '';
-                document.getElementById('mode-global').className = mode === 'global' ? 'active' : '';
-                document.getElementById('mode-direct').className = mode === 'direct' ? 'active' : '';
-
-                // Get proxy
-                const proxy = await getGlobalProxy();
-                const chain = [];
+                const encodedName = encodeURIComponent(proxyName);
+                const result = await fetchAPI(`/proxies/${encodedName}/delay?url=http://www.gstatic.com/generate_204&timeout=5000`);
                 
-                // Build the full chain
-                let currentProxy = proxy.now;
-                chain.push(`GLOBAL → ${currentProxy}`);
+                const delay = result.delay;
+                let latencyClass = 'good';
+                if (delay > 300) latencyClass = 'medium';
+                if (delay > 800) latencyClass = 'bad';
                 
-                // Check if it's 翻墙机场 or auto-select
-                if (currentProxy === '翻墙机场 GFWAirPort') {
-                    const gfwData = await fetchAPI('/proxies/翻墙机场%20GFWAirPort');
-                    chain.push(`翻墙机场 → ${gfwData.now}`);
-                    if (gfwData.now === '自动选择') {
-                        const autoData = await fetchAPI('/proxies/自动选择');
-                        chain.push(`自动选择 → ${autoData.now}`);
-                    }
-                }
-
-                // Get 自动选择 current node
-                let autoSelectNode = '';
-                try {
-                    const autoData = await fetchAPI('/proxies/自动选择');
-                    autoSelectNode = autoData.now;
-                } catch (e) {}
-
-                // Build status display
-                let statusHTML = `
-                    <div class="status">
-                        <span class="status-label">API:</span>
-                        <span class="status-value">${API_BASE}</span>
-                    </div>
-                    <div class="status">
-                        <span class="status-label">Mode:</span>
-                        <span class="status-value">${mode}</span>
-                    </div>
-                    <div class="status">
-                        <span class="status-label">GLOBAL:</span>
-                        <span class="status-value">${proxy.now}</span>
-                    </div>
-                `;
+                latencyCache[proxyName] = { delay, class: latencyClass };
                 
-                if (autoSelectNode && (proxy.now === '翻墙机场 GFWAirPort' || proxy.now === '自动选择')) {
-                    statusHTML += `
-                        <div class="status">
-                            <span class="status-label">Auto Select:</span>
-                            <span class="status-value">${autoSelectNode}</span>
-                        </div>
-                    `;
+                if (badge) {
+                    badge.textContent = `${delay}ms`;
+                    badge.className = `proxy-latency ${latencyClass}`;
                 }
-
-                document.getElementById('status-content').innerHTML = statusHTML;
-
-                // Update proxy buttons
-                const proxyMap = {
-                    'DIRECT': 'proxy-direct',
-                    '翻墙机场 GFWAirPort': 'proxy-gfw',
-                    'Singapore V2 - B Group': 'proxy-sg',
-                    'Tokyo V2 - B Group': 'proxy-jp',
-                    'HongKong V2 - B Group': 'proxy-hk'
-                };
-                
-                Object.keys(proxyMap).forEach(key => {
-                    const btn = document.getElementById(proxyMap[key]);
-                    if (btn) btn.className = proxy.now === key ? 'active' : '';
-                });
-
-                // Get connections
-                const connections = await getConnections();
-                const connDiv = document.getElementById('connections');
-                if (connections.length === 0) {
-                    connDiv.innerHTML = '<div style="color: #888; text-align: center;">No active connections</div>';
-                } else {
-                    connDiv.innerHTML = connections.slice(0, 20).map(c => {
-                        const chains = c.chains ? c.chains.join(' → ') : 'N/A';
-                        return `
-                            <div class="connection-item">
-                                <div class="host">${c.metadata?.host || 'Unknown'}</div>
-                                <div class="chain">${chains}</div>
-                            </div>
-                        `;
-                    }).join('');
-                }
-
-                // Refresh proxy groups (skip if testing latency)
-                if (!isTestingLatency) {
-                    await renderProxyGroups();
-                }
-
             } catch (error) {
-                document.getElementById('status-content').innerHTML = `
-                    <div style="color: #e94560; text-align: center;">
-                        ❌ Error: ${error.message}<br>
-                        <small>Make sure mihomo is running on ${API_BASE}</small>
-                    </div>
-                `;
+                latencyCache[proxyName] = { delay: 'Error', class: 'bad' };
+                if (badge) {
+                    badge.textContent = 'Error';
+                    badge.className = 'proxy-latency bad';
+                }
             }
         }
 
-        async function setMode(mode) {
-            try {
-                const response = await fetchAPI('/configs', {
-                    method: 'PATCH',
-                    body: JSON.stringify({ mode: mode })
+        // Test all proxies in a group (for advanced view)
+        async function testGroupLatency(groupName) {
+            const groups = await getProxyGroups();
+            const group = groups[groupName];
+            if (!group || !group.all) return;
+
+            const container = document.getElementById('proxy-groups');
+            
+            // Set all to testing state
+            const groupEls = container.querySelectorAll('.proxy-group');
+            let groupEl = null;
+            for (const el of groupEls) {
+                if (decodeURIComponent(el.getAttribute('data-group-name')) === groupName) {
+                    groupEl = el;
+                    break;
+                }
+            }
+            
+            if (groupEl) {
+                const latencyEls = groupEl.querySelectorAll('.proxy-latency');
+                latencyEls.forEach(el => {
+                    el.textContent = 'Testing...';
+                    el.className = 'proxy-latency testing';
                 });
-                // PATCH may return empty response on success
-                showMessage('mode-message', `✅ Mode changed to: ${mode}`);
-                await refreshAll();
-            } catch (error) {
-                showMessage('mode-message', `❌ Error: ${error.message}`, true);
+            }
+
+            // Test each proxy sequentially
+            for (const proxyName of group.all) {
+                await testSingleProxyLatency(proxyName);
+                await new Promise(r => setTimeout(r, 100));
             }
         }
 
-        async function setProxy(proxyName) {
+        // Test all proxies in all groups (for advanced view)
+        async function testAllLatency() {
+            const btn = document.querySelector('#advanced-view-content .test-all-btn');
+            btn.disabled = true;
+            btn.textContent = 'Testing...';
+            isTestingLatency = true;
+
             try {
-                const response = await fetchAPI('/proxies/GLOBAL', {
-                    method: 'PUT',
-                    body: JSON.stringify({ name: proxyName })
-                });
-                // PUT may return empty response on success
-                showMessage('proxy-message', `✅ Proxy changed to: ${proxyName}`);
-                await refreshAll();
+                const groups = await getProxyGroups();
+                const groupNames = Object.keys(groups).filter(name => 
+                    groups[name].type === 'Selector' || groups[name].type === 'URLTest' || groups[name].type === 'LoadBalance'
+                );
+
+                for (const groupName of groupNames) {
+                    await testGroupLatency(groupName);
+                }
+
+                showMessage('proxies-message', '✅ All latency tests completed');
             } catch (error) {
-                showMessage('proxy-message', `❌ Error: ${error.message}`, true);
+                showMessage('proxies-message', `❌ Error: ${error.message}`, true);
+            } finally {
+                isTestingLatency = false;
+                btn.disabled = false;
+                btn.textContent = '🚀 Test All Latency';
             }
         }
 
-        // Auto refresh every 5 seconds
-        setInterval(refreshAll, 5000);
-
-        // Toggle proxy groups section
-        function toggleProxyGroups() {
-            const content = document.getElementById('proxy-groups-content');
-            const icon = document.getElementById('proxy-groups-icon');
+        // Debug Tool Functions
+        function toggleDebugTool() {
+            const content = document.getElementById('debug-tool-content');
+            const icon = document.getElementById('debug-tool-icon');
             const isCollapsed = content.classList.contains('collapsed');
             
             if (isCollapsed) {
                 content.classList.remove('collapsed');
                 icon.classList.remove('collapsed');
-                // Load proxy groups when expanding
-                renderProxyGroups();
             } else {
                 content.classList.add('collapsed');
                 icon.classList.add('collapsed');
             }
         }
 
-        // Initial load
-        loadSettings();
-        refreshAll();
+        // Syntax highlight JSON for display
+        function syntaxHighlight(json) {
+            if (typeof json !== 'string') {
+                json = JSON.stringify(json, null, 2);
+            }
+            return json.replace(/("(?:\\.|[^"\\])*")|(\b(?:true|false|null)\b)|(\b\d+(?:\.\d+)?\b)|([{}[\],:])|(\w+)(?=:)/g, function(match, str, bool, num, punct, key) {
+                if (key) return '<span class="key">' + key + '</span>';
+                if (str) return '<span class="string">' + str + '</span>';
+                if (bool) return '<span class="boolean">' + bool + '</span>';
+                if (num) return '<span class="number">' + num + '</span>';
+                return match;
+            });
+        }
+
+        // Fetch debug data from API
+        async function fetchDebugData(type) {
+            const outputDiv = document.getElementById('debug-output');
+            const jsonPre = outputDiv.querySelector('.debug-json');
+            const buttons = document.querySelectorAll('.debug-btn');
+            
+            // Update active button state
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            outputDiv.classList.add('visible');
+            jsonPre.innerHTML = '<span style="color: #888;">Loading...</span>';
+            
+            try {
+                let endpoint;
+                switch(type) {
+                    case 'config': endpoint = '/configs'; break;
+                    case 'global': endpoint = '/proxies/GLOBAL'; break;
+                    case 'proxies': endpoint = '/proxies'; break;
+                    case 'rules': endpoint = '/rules'; break;
+                    case 'connections': endpoint = '/connections'; break;
+                    case 'providers': endpoint = '/providers/proxies'; break;
+                    default: endpoint = '/configs';
+                }
+                
+                const data = await fetchAPI(endpoint);
+                jsonPre.innerHTML = syntaxHighlight(data);
+            } catch (error) {
+                jsonPre.innerHTML = '<span style="color: #e94560;">Error: ' + error.message + '</span>';
+            }
+        }
+
+        // Check current proxy chain by tracing through nested proxies
+        async function checkCurrentChain() {
+            const outputDiv = document.getElementById('debug-output');
+            const jsonPre = outputDiv.querySelector('.debug-json');
+            const buttons = document.querySelectorAll('.debug-btn');
+            
+            // Update active button state
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            outputDiv.classList.add('visible');
+            jsonPre.innerHTML = '<span style="color: #888;">Tracing proxy chain...</span>';
+            
+            try {
+                // Step 1: Get GLOBAL proxy
+                const globalData = await fetchAPI('/proxies/GLOBAL');
+                const chain = [];
+                const details = [];
+                
+                let currentProxy = globalData.now;
+                chain.push(`GLOBAL: ${currentProxy}`);
+                details.push({ step: 'GLOBAL', name: 'GLOBAL', selected: currentProxy, type: globalData.type });
+                
+                // Step 2: Trace through nested proxies (max 5 levels to prevent infinite loop)
+                let depth = 0;
+                const visited = new Set();
+                
+                while (currentProxy && depth < 5 && !visited.has(currentProxy)) {
+                    visited.add(currentProxy);
+                    
+                    try {
+                        const encodedName = encodeURIComponent(currentProxy);
+                        const proxyData = await fetchAPI(`/proxies/${encodedName}`);
+                        
+                        if (proxyData.now && proxyData.now !== currentProxy) {
+                            // This is a group/selector that points to another proxy
+                            chain.push(`→ ${currentProxy}: ${proxyData.now}`);
+                            details.push({ 
+                                step: `Level ${depth + 1}`, 
+                                name: currentProxy, 
+                                selected: proxyData.now, 
+                                type: proxyData.type,
+                                delay: proxyData.delay 
+                            });
+                            currentProxy = proxyData.now;
+                        } else {
+                            // This is an actual server node
+                            chain.push(`→ ${currentProxy} (actual server)`);
+                            details.push({ 
+                                step: 'Final', 
+                                name: currentProxy, 
+                                type: proxyData.type || 'Server',
+                                delay: proxyData.delay,
+                                history: proxyData.history 
+                            });
+                            break;
+                        }
+                    } catch (error) {
+                        chain.push(`→ Error: ${error.message}`);
+                        break;
+                    }
+                    
+                    depth++;
+                }
+                
+                // Display the result
+                const result = {
+                    summary: chain.join('\n'),
+                    chain: details,
+                    currentServer: currentProxy
+                };
+                
+                jsonPre.innerHTML = `<span style="color: #00d4aa; font-weight: bold;">Proxy Chain:</span>\n\n` + 
+                                    syntaxHighlight(result);
+                
+            } catch (error) {
+                jsonPre.innerHTML = '<span style="color: #e94560;">Error: ' + error.message + '</span>';
+            }
+        }
+
+        // Initial load - wait for DOM to be ready
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSettings();
+            refreshAll();
+        });
     </script>
 </body>
 </html>
