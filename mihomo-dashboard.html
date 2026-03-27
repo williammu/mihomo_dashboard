@@ -326,15 +326,9 @@
         }
         /* Hierarchical Proxy Tree Styles */
         .proxy-tree {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            display: flex;
+            flex-direction: column;
             gap: 12px;
-            align-items: start;
-        }
-        @media (max-width: 850px) {
-            .proxy-tree {
-                grid-template-columns: 1fr;
-            }
         }
         .proxy-tree-group {
             background: linear-gradient(135deg, #1a3a5c 0%, #0f3460 100%);
@@ -344,13 +338,18 @@
             min-width: 0;
             height: fit-content;
         }
+        .proxy-tree-group-row {
+            display: flex;
+            align-items: stretch;
+            background: rgba(0, 0, 0, 0.2);
+        }
         .proxy-tree-group-header {
+            flex: 1;
             display: grid;
-            grid-template-columns: 20px 24px 1fr auto auto;
+            grid-template-columns: 24px 1fr auto auto;
             align-items: center;
             gap: 8px;
             padding: 10px 14px;
-            background: rgba(0, 0, 0, 0.2);
             border-bottom: 1px solid transparent;
             cursor: pointer;
             transition: all 0.2s;
@@ -370,13 +369,29 @@
             border-left: 3px solid #00d4aa;
         }
         .proxy-tree-toggle {
+            width: 36px;
+            align-self: stretch;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.25);
+            border-right: 1px solid #1a3a5c;
+            flex-shrink: 0;
+        }
+        .proxy-tree-toggle:hover {
+            background: rgba(240, 165, 0, 0.3);
+        }
+        .proxy-tree-toggle:hover .proxy-tree-toggle-icon {
+            color: #f0a500;
+        }
+        .proxy-tree-toggle-icon {
             font-size: 12px;
             color: #888;
             transition: transform 0.3s;
-            width: 20px;
-            text-align: center;
+            display: inline-block;
         }
-        .proxy-tree-toggle.collapsed {
+        .proxy-tree-toggle.collapsed .proxy-tree-toggle-icon {
             transform: rotate(-90deg);
         }
         .proxy-tree-group-icon {
@@ -436,6 +451,7 @@
         .proxy-tree-children.collapsed {
             display: none;
         }
+
         /* Sub-group styling (nested proxy groups) */
         .proxy-tree-subgroup {
             background: rgba(26, 58, 92, 0.5);
@@ -444,9 +460,15 @@
             margin-left: 12px;
             overflow: hidden;
         }
+        .proxy-tree-subgroup-row {
+            display: flex;
+            align-items: stretch;
+            background: rgba(0, 0, 0, 0.15);
+        }
         .proxy-tree-subgroup-header {
+            flex: 1;
             display: grid;
-            grid-template-columns: 16px 18px 1fr auto auto;
+            grid-template-columns: 18px 1fr auto auto auto;
             align-items: center;
             gap: 6px;
             padding: 8px 10px;
@@ -635,21 +657,14 @@
         }
         /* Standalone section - spans full width */
         .proxy-tree-standalone-section {
-            grid-column: 1 / -1;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            display: flex;
+            flex-direction: column;
             gap: 8px;
             margin-top: 8px;
             padding-top: 8px;
             border-top: 1px solid #0f3460;
         }
-        @media (max-width: 650px) {
-            .proxy-tree-standalone-section {
-                grid-template-columns: 1fr;
-            }
-        }
         .proxy-tree-standalone-header {
-            grid-column: 1 / -1;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -795,130 +810,115 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
         }
-        /* Advanced view - Proxy group styles */
-        .proxy-group {
-            background: #0f3460;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 12px;
-            border: 1px solid #1a1a2e;
-        }
-        .proxy-group-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #16213e;
-        }
-        .proxy-group-name {
-            color: #00d4aa;
-            font-weight: bold;
-            font-size: 14px;
-        }
-        .proxy-group-type {
-            color: #888;
-            font-size: 12px;
-            margin-top: 2px;
-        }
-        .proxy-list {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .proxy-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #16213e;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 13px;
-            border: 1px solid transparent;
-            transition: all 0.2s;
-        }
-        .proxy-item:hover {
-            border-color: #00d4aa;
-        }
-        .proxy-item.selected {
-            border-color: #00d4aa;
-            background: #00d4aa22;
-        }
-        .proxy-item.selected .proxy-name::before {
-            content: "✓ ";
-            color: #00d4aa;
-            font-weight: bold;
-        }
-        .proxy-name {
-            flex: 1;
-            word-break: break-word;
-            line-height: 1.4;
-            padding-right: 10px;
             color: #eee;
         }
-        .proxy-latency {
-            font-size: 12px;
-            padding: 3px 10px;
-            border-radius: 4px;
-            margin-right: 8px;
-            min-width: 55px;
-            text-align: center;
-            background: #0f3460;
-            color: #888;
-        }
-        .proxy-latency.good {
-            background: #00d4aa33;
-            color: #00d4aa;
-        }
-        .proxy-latency.medium {
-            background: #f0a50033;
-            color: #f0a500;
-        }
-        .proxy-latency.bad {
-            background: #e9456033;
-            color: #e94560;
-        }
-        .proxy-latency.testing {
-            background: #0f3460;
-            color: #00d4aa;
-            animation: pulse 1s infinite;
-        }
-        /* Debug tool styles */
+        /* Debug tool styles - Retro Terminal */
         .debug-output {
-            background: #0a0a14;
-            border: 1px solid #0f3460;
-            border-radius: 8px;
-            padding: 15px;
+            background: #0c0c0c;
+            border: 2px solid #333;
+            border-radius: 6px;
             margin-top: 15px;
-            max-height: 500px;
-            overflow-y: auto;
-            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-            font-size: 12px;
-            line-height: 1.5;
+            margin-bottom: 20px;
+            height: 500px;
+            width: 100%;
             display: none;
+            overflow: hidden;
+            box-sizing: border-box;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.1), inset 0 0 20px rgba(0, 0, 0, 0.5);
         }
         .debug-output.visible {
             display: block;
+        }
+        .debug-output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 15px;
+            background: #1a1a1a;
+            border-bottom: 1px solid #333;
+            flex-shrink: 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .debug-output-title {
+            color: #0f0;
+            font-size: 12px;
+            font-weight: bold;
+            font-family: 'Courier New', 'Monaco', monospace;
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+        }
+        .debug-copy-btn {
+            background: transparent;
+            border: 1px solid #0f0;
+            color: #0f0;
+            padding: 4px 12px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.2s;
+            font-family: 'Courier New', 'Monaco', monospace;
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+        }
+        .debug-copy-btn:hover {
+            background: #0f0;
+            color: #000;
+            text-shadow: none;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+        .debug-copy-btn.copied {
+            background: #0f0;
+            color: #000;
+            border-color: #0f0;
+            text-shadow: none;
+        }
+        .debug-json-container {
+            height: 455px;
+            overflow-y: auto;
+            padding: 15px;
+            width: 100%;
+            box-sizing: border-box;
+            background: #0c0c0c;
+        }
+        .debug-json-container::-webkit-scrollbar {
+            width: 8px;
+            background: #1a1a1a;
+        }
+        .debug-json-container::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+        .debug-json-container::-webkit-scrollbar-thumb:hover {
+            background: #0f0;
         }
         .debug-json {
             margin: 0;
             white-space: pre-wrap;
             word-break: break-all;
+            font-family: 'Courier New', 'Monaco', 'Consolas', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #0f0;
+            text-shadow: 0 0 2px rgba(0, 255, 0, 0.3);
         }
         .debug-json .key {
-            color: #9cdcfe;
+            color: #0ff;
+            text-shadow: 0 0 2px rgba(0, 255, 255, 0.3);
         }
         .debug-json .string {
-            color: #ce9178;
+            color: #0f0;
+            text-shadow: 0 0 2px rgba(0, 255, 0, 0.3);
         }
         .debug-json .number {
-            color: #b5cea8;
+            color: #ff0;
+            text-shadow: 0 0 2px rgba(255, 255, 0, 0.3);
         }
         .debug-json .boolean {
-            color: #569cd6;
+            color: #f0f;
+            text-shadow: 0 0 2px rgba(255, 0, 255, 0.3);
         }
         .debug-json .null {
-            color: #569cd6;
+            color: #f00;
+            text-shadow: 0 0 2px rgba(255, 0, 0, 0.3);
         }
         .debug-controls {
             display: flex;
@@ -1039,10 +1039,6 @@
     <div class="card">
         <h2>Proxy Selection</h2>
         <div class="current-selection">
-            <div class="current-selection-label">Current Proxy Group</div>
-            <div id="current-proxy-group" class="current-selection-value">Loading...</div>
-        </div>
-        <div class="current-selection" style="margin-top: 10px;">
             <div class="current-selection-label">Actual Server Chain</div>
             <div id="current-server-chain" class="current-selection-value" style="font-size: 13px;">Loading...</div>
         </div>
@@ -1089,23 +1085,10 @@
         </div>
     </div>
 
-    <div class="card">
-        <div class="collapsible-header" onclick="toggleAdvancedView()">
-            <h2>🔧 Advanced View (All Proxy Groups)</h2>
-            <span id="advanced-view-icon" class="collapsible-icon collapsed">▼</span>
-        </div>
-        <div id="advanced-view-content" class="collapsible-content collapsed">
-            <button class="test-all-btn" onclick="testAllLatency()">🚀 Test All Latency</button>
-            <div id="proxy-groups">
-                <div class="loading">Loading proxy groups...</div>
-            </div>
-            <div id="proxies-message" class="message"></div>
-        </div>
-    </div>
 
-    <div class="card">
-        <div class="collapsible-header" onclick="toggleDebugTool()">
-            <h2>🔬 Debug Tool</h2>
+    <div class="card" style="margin-bottom: 30px;">
+        <div class="collapsible-header" onclick="toggleDebugTool()" style="padding: 5px 0;">
+            <h2 style="margin: 0;">🔬 Debug Tool</h2>
             <span id="debug-tool-icon" class="collapsible-icon collapsed">▼</span>
         </div>
         <div id="debug-tool-content" class="collapsible-content collapsed">
@@ -1120,7 +1103,13 @@
                 <button class="debug-btn" onclick="checkCurrentChain()" style="border-color: #00d4aa; color: #00d4aa;">🔍 Check Current Chain</button>
             </div>
             <div id="debug-output" class="debug-output">
-                <pre class="debug-json"></pre>
+                <div class="debug-output-header">
+                    <span class="debug-output-title">Response</span>
+                    <button class="debug-copy-btn" onclick="copyDebugOutput()">📋 Copy</button>
+                </div>
+                <div class="debug-json-container">
+                    <pre class="debug-json"></pre>
+                </div>
             </div>
             <div id="debug-message" class="message"></div>
         </div>
@@ -1415,24 +1404,29 @@
         function toggleProxyTreeGroup(groupId) {
             const content = document.getElementById(`proxy-tree-children-${groupId}`);
             const toggle = document.getElementById(`proxy-tree-toggle-${groupId}`);
-            const header = toggle?.closest('.proxy-tree-group-header, .proxy-tree-subgroup-header');
             
-            if (content && toggle) {
-                const isCollapsed = content.classList.toggle('collapsed');
-                toggle.classList.toggle('collapsed');
-                
-                // Update toggle arrow direction
-                toggle.textContent = isCollapsed ? '▶' : '▼';
-                
-                // Update header expanded state for top-level groups
-                if (header && header.classList.contains('proxy-tree-group-header')) {
-                    header.classList.toggle('expanded', !isCollapsed);
-                }
+            if (!content || !toggle) return;
+            
+            // Find the header by looking at the parent's next sibling (the row's header)
+            const row = toggle.parentElement;
+            const header = row ? row.querySelector('.proxy-tree-group-header, .proxy-tree-subgroup-header') : null;
+            const isCollapsed = content.classList.toggle('collapsed');
+            toggle.classList.toggle('collapsed', isCollapsed);
+            
+            // Update toggle arrow direction
+            const icon = toggle.querySelector('.proxy-tree-toggle-icon');
+            if (icon) {
+                icon.textContent = isCollapsed ? '▶' : '▼';
+            }
+            
+            // Update header expanded state for top-level groups
+            if (header && header.classList.contains('proxy-tree-group-header')) {
+                header.classList.toggle('expanded', !isCollapsed);
             }
         }
 
         // Render proxy selection buttons dynamically - Hierarchical Tree View
-        async function renderProxySelectionButtons(globalProxy) {
+        async function renderProxySelectionButtons(globalProxy, expandedGroups = new Set()) {
             const container = document.getElementById('proxy-selection-buttons');
             
             if (!container) return;
@@ -1442,20 +1436,18 @@
                 return;
             }
             
-            // Update current proxy group display
-            const currentGroupEl = document.getElementById('current-proxy-group');
-            if (currentGroupEl) {
-                currentGroupEl.textContent = globalProxy.now || 'N/A';
-            }
-            
             // Resolve and display the actual server chain
             const chainEl = document.getElementById('current-server-chain');
-            if (chainEl && globalProxy.now) {
-                const chain = await resolveServerChain(globalProxy.now);
+            if (chainEl) {
+                // Start from GLOBAL to get the full chain including nested groups
+                const chain = await resolveServerChain('GLOBAL');
                 if (chain.length > 1) {
-                    chainEl.innerHTML = chain.join(' → ');
+                    // Skip the first element (GLOBAL) and join the rest
+                    chainEl.innerHTML = chain.slice(1).join(' → ');
+                } else if (chain.length === 1) {
+                    chainEl.textContent = chain[0];
                 } else {
-                    chainEl.textContent = chain[0] || 'N/A';
+                    chainEl.textContent = 'N/A';
                 }
             }
             
@@ -1509,18 +1501,29 @@
             };
             
             // Render a leaf proxy (individual server)
-            const renderLeafProxy = (proxyName, indent = 0) => {
+            const renderLeafProxy = (proxyName, indent = 0, parentGroupName = null) => {
                 const display = getProxyDisplayInfo(proxyName);
-                const isActive = globalProxy.now === proxyName;
+                // If inside a group, check if this proxy is the group's selected "now"
+                // Otherwise check against GLOBAL's "now"
+                let isActive = false;
+                if (parentGroupName) {
+                    const parentProxy = allProxies[parentGroupName];
+                    isActive = parentProxy && parentProxy.now === proxyName;
+                } else {
+                    isActive = globalProxy.now === proxyName;
+                }
                 const delay = getProxyDelay(proxyName);
                 const latency = getLatencyDisplayInfo(proxyName, delay);
                 const type = getProxyType(proxyName);
                 const marginStyle = indent > 0 ? `margin-left: ${16 + indent * 12}px;` : 'margin-left: 16px;';
                 
+                // If inside a group, select within that group; otherwise select globally
+                const targetGroup = parentGroupName || 'GLOBAL';
+                
                 return `
                     <div class="proxy-tree-leaf ${isActive ? 'selected' : ''}" style="${marginStyle}" data-proxy-name="${encodeURIComponent(proxyName)}">
                         <span class="proxy-tree-leaf-icon">${display.emoji}</span>
-                        <span class="proxy-tree-leaf-name" onclick="setProxy('${proxyName.replace(/'/g, "\\'")}')" title="${display.label}">${display.label}</span>
+                        <span class="proxy-tree-leaf-name" onclick="setProxy('${proxyName.replace(/'/g, "\\'")}', '${targetGroup.replace(/'/g, "\\'")}')" title="${display.label}">${display.label}</span>
                         <span class="proxy-tree-leaf-type">${type}</span>
                         <span class="proxy-tree-leaf-latency ${latency.class}" data-latency-for="${encodeURIComponent(proxyName)}">${latency.text}</span>
                         <button class="proxy-tree-leaf-test" onclick="testSingleProxySelectionLatency('${proxyName.replace(/'/g, "\\'")}')" data-test-for="${encodeURIComponent(proxyName)}">🧪 Test</button>
@@ -1534,7 +1537,7 @@
                 const isActive = globalProxy.now === groupName;
                 const proxy = allProxies[groupName];
                 const children = getGroupChildren(groupName);
-                const groupId = encodeURIComponent(groupName).replace(/%/g, '_');
+                const groupId = 'sub_' + encodeURIComponent(groupName).replace(/%/g, '_') + '_' + indent;
                 const marginStyle = indent > 0 ? `margin-left: ${8 + indent * 6}px;` : '';
                 
                 // Get latency for group's selected proxy (now)
@@ -1548,21 +1551,30 @@
                     if (isGroup(childName)) {
                         childrenHtml += renderSubGroup(childName, indent + 1);
                     } else {
-                        childrenHtml += renderLeafProxy(childName, indent + 1);
+                        childrenHtml += renderLeafProxy(childName, indent + 1, groupName);
                     }
                 }
                 
+                const isExpanded = expandedGroups.has(groupId);
+                const toggleState = isExpanded ? '' : 'collapsed';
+                const contentState = isExpanded ? '' : 'collapsed';
+                const arrow = isExpanded ? '▼' : '▶';
+                
+                const globalIndicator = isActive ? ' 🟢' : '';
+                
                 return `
                     <div class="proxy-tree-subgroup" style="${marginStyle}">
-                        <div class="proxy-tree-subgroup-header ${isActive ? 'selected' : ''}" data-proxy-name="${encodeURIComponent(groupName)}" onclick="setProxy('${groupName.replace(/'/g, "\\'")}')">
-                            <span class="proxy-tree-toggle collapsed" id="proxy-tree-toggle-${groupId}" onclick="event.stopPropagation(); toggleProxyTreeGroup('${groupId}')">▶</span>
-                            <span class="proxy-tree-subgroup-icon">📁</span>
-                            <span class="proxy-tree-subgroup-name" title="${display.label}">${display.emoji} ${display.label}</span>
-                            <span style="font-size: 9px; color: #888; white-space: nowrap;">${proxy?.type || 'Group'}</span>
-                            <span class="proxy-tree-leaf-latency ${nowLatency.class}" style="margin-right: 4px;" title="Latency of selected proxy: ${nowProxyName || 'None'}" data-latency-for="${encodeURIComponent(groupName)}">${nowLatency.text}</span>
-                            <button class="proxy-tree-group-test" onclick="event.stopPropagation(); testGroupLatency('${groupName.replace(/'/g, "\\'")}')" data-test-for="${encodeURIComponent(groupName)}">🧪 Test</button>
+                        <div class="proxy-tree-subgroup-row">
+                            <span class="proxy-tree-toggle ${toggleState}" id="proxy-tree-toggle-${groupId}" data-group-id="${groupId}"><span class="proxy-tree-toggle-icon">${arrow}</span></span>
+                            <div class="proxy-tree-subgroup-header ${isActive ? 'selected' : ''}" data-proxy-name="${encodeURIComponent(groupName)}" onclick="setProxy('${groupName.replace(/'/g, "\\'")}')">
+                                <span class="proxy-tree-subgroup-icon">📁</span>
+                                <span class="proxy-tree-subgroup-name" title="${display.label}">${display.emoji} ${display.label}${globalIndicator}</span>
+                                <span style="font-size: 9px; color: #888; white-space: nowrap;">${proxy?.type || 'Group'} → ${nowProxyName || 'None'}</span>
+                                <span class="proxy-tree-leaf-latency ${nowLatency.class}" style="margin-right: 4px;" title="Latency of selected proxy: ${nowProxyName || 'None'}" data-latency-for="${encodeURIComponent(groupName)}">${nowLatency.text}</span>
+                                <button class="proxy-tree-group-test" onclick="event.stopPropagation(); testGroupLatency('${groupName.replace(/'/g, "\\'")}')" data-test-for="${encodeURIComponent(groupName)}">🧪 Test</button>
+                            </div>
                         </div>
-                        <div class="proxy-tree-subgroup-children collapsed" id="proxy-tree-children-${groupId}">
+                        <div class="proxy-tree-subgroup-children ${contentState}" id="proxy-tree-children-${groupId}">
                             ${childrenHtml}
                         </div>
                     </div>
@@ -1575,7 +1587,7 @@
                 const isActive = globalProxy.now === groupName;
                 const proxy = allProxies[groupName];
                 const children = getGroupChildren(groupName);
-                const groupId = encodeURIComponent(groupName).replace(/%/g, '_');
+                const groupId = 'top_' + encodeURIComponent(groupName).replace(/%/g, '_');
                 
                 // Get latency for group's selected proxy (now)
                 const nowProxyName = proxy?.now;
@@ -1588,23 +1600,32 @@
                     if (isGroup(childName)) {
                         childrenHtml += renderSubGroup(childName);
                     } else {
-                        childrenHtml += renderLeafProxy(childName);
+                        childrenHtml += renderLeafProxy(childName, 0, groupName);
                     }
                 }
                 
+                const isExpanded = expandedGroups.has(groupId);
+                const toggleState = isExpanded ? '' : 'collapsed';
+                const contentState = isExpanded ? '' : 'collapsed';
+                const arrow = isExpanded ? '▼' : '▶';
+                
+                const globalIndicator = isActive ? ' 🟢' : '';
+                
                 return `
                     <div class="proxy-tree-group">
-                        <div class="proxy-tree-group-header ${isActive ? 'selected' : ''}" data-proxy-name="${encodeURIComponent(groupName)}" onclick="setProxy('${groupName.replace(/'/g, "\\'")}')">
-                            <span class="proxy-tree-toggle collapsed" id="proxy-tree-toggle-${groupId}" onclick="event.stopPropagation(); toggleProxyTreeGroup('${groupId}')">▶</span>
-                            <span class="proxy-tree-group-icon">📁</span>
-                            <div class="proxy-tree-group-info">
-                                <div class="proxy-tree-group-name" title="${display.label}">${display.emoji} ${display.label}</div>
-                                <div class="proxy-tree-group-meta">${proxy?.type || 'Group'} • ${children.length} items • Now: ${nowProxyName || 'None'}</div>
+                        <div class="proxy-tree-group-row">
+                            <span class="proxy-tree-toggle ${toggleState}" id="proxy-tree-toggle-${groupId}" data-group-id="${groupId}"><span class="proxy-tree-toggle-icon">${arrow}</span></span>
+                            <div class="proxy-tree-group-header ${isActive ? 'selected' : ''}" data-proxy-name="${encodeURIComponent(groupName)}" onclick="setProxy('${groupName.replace(/'/g, "\\'")}')">
+                                <span class="proxy-tree-group-icon">📁</span>
+                                <div class="proxy-tree-group-info">
+                                    <div class="proxy-tree-group-name" title="${display.label}">${display.emoji} ${display.label}${globalIndicator}</div>
+                                    <div class="proxy-tree-group-meta">${proxy?.type || 'Group'} • ${children.length} items • Selected: ${nowProxyName || 'None'}</div>
+                                </div>
+                                <span class="proxy-tree-leaf-latency ${nowLatency.class}" style="margin-right: 8px; font-size: 11px; padding: 2px 8px;" title="Latency of selected proxy" data-latency-for="${encodeURIComponent(groupName)}">${nowLatency.text}</span>
+                                <button class="proxy-tree-group-test" onclick="event.stopPropagation(); testGroupLatency('${groupName.replace(/'/g, "\\'")}')" data-test-for="${encodeURIComponent(groupName)}">🧪 Test</button>
                             </div>
-                            <span class="proxy-tree-leaf-latency ${nowLatency.class}" style="margin-right: 8px; font-size: 11px; padding: 2px 8px;" title="Latency of selected proxy" data-latency-for="${encodeURIComponent(groupName)}">${nowLatency.text}</span>
-                            <button class="proxy-tree-group-test" onclick="event.stopPropagation(); testGroupLatency('${groupName.replace(/'/g, "\\'")}')" data-test-for="${encodeURIComponent(groupName)}">🧪 Test</button>
                         </div>
-                        <div class="proxy-tree-children collapsed" id="proxy-tree-children-${groupId}">
+                        <div class="proxy-tree-children ${contentState}" id="proxy-tree-children-${groupId}">
                             ${childrenHtml}
                         </div>
                     </div>
@@ -1669,6 +1690,17 @@
             
             html += '</div>';
             container.innerHTML = html;
+            
+            // Add event listeners for toggle buttons
+            container.querySelectorAll('.proxy-tree-toggle').forEach(toggle => {
+                toggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const groupId = this.getAttribute('data-group-id');
+                    if (groupId) {
+                        toggleProxyTreeGroup(groupId);
+                    }
+                });
+            });
         }
 
         // Test latency for a single group (test its 'now' node)
@@ -2081,9 +2113,16 @@
                 document.getElementById('mode-global').className = mode === 'global' ? 'active' : '';
                 document.getElementById('mode-direct').className = mode === 'direct' ? 'active' : '';
 
+                // Save expanded state before re-rendering
+                const expandedGroups = new Set();
+                document.querySelectorAll('.proxy-tree-children:not(.collapsed)').forEach(el => {
+                    const groupId = el.id.replace('proxy-tree-children-', '');
+                    if (groupId) expandedGroups.add(groupId);
+                });
+
                 // Get proxy and update UI
                 const proxy = await getGlobalProxy();
-                await renderProxySelectionButtons(proxy);
+                await renderProxySelectionButtons(proxy, expandedGroups);
                 
                 // Update rules info (only show in rule mode)
                 await displayRulesInfo();
@@ -2095,7 +2134,8 @@
                     connDiv.innerHTML = '<div style="color: #888; text-align: center;">No active connections</div>';
                 } else {
                     connDiv.innerHTML = connections.slice(0, 20).map(c => {
-                        const chains = c.chains ? c.chains.join(' → ') : 'N/A';
+                        // chains array is in reverse order (destination to source), so reverse it
+                        const chains = c.chains ? [...c.chains].reverse().join(' → ') : 'N/A';
                         return `
                             <div class="connection-item">
                                 <div class="host">${c.metadata?.host || 'Unknown'}</div>
@@ -2103,12 +2143,6 @@
                             </div>
                         `;
                     }).join('');
-                }
-
-                // Refresh advanced view if expanded (skip if testing latency)
-                const advancedContent = document.getElementById('advanced-view-content');
-                if (!isTestingLatency && !advancedContent.classList.contains('collapsed')) {
-                    await renderAdvancedView();
                 }
 
             } catch (error) {
@@ -2134,13 +2168,18 @@
             }
         }
 
-        async function setProxy(proxyName) {
+        async function setProxy(proxyName, targetGroup = 'GLOBAL') {
             try {
-                const response = await fetchAPI('/proxies/GLOBAL', {
+                const encodedGroup = encodeURIComponent(targetGroup);
+                const response = await fetchAPI(`/proxies/${encodedGroup}`, {
                     method: 'PUT',
                     body: JSON.stringify({ name: proxyName })
                 });
-                showMessage('proxy-message', `✅ Proxy changed to: ${proxyName}`);
+                if (targetGroup === 'GLOBAL') {
+                    showMessage('proxy-message', `✅ Proxy changed to: ${proxyName}`);
+                } else {
+                    showMessage('proxy-message', `✅ ${targetGroup} → ${proxyName}`);
+                }
                 await refreshAll();
             } catch (error) {
                 showMessage('proxy-message', `❌ Error: ${error.message}`, true);
@@ -2149,171 +2188,6 @@
 
         // Auto refresh every 5 seconds
         setInterval(refreshAll, 5000);
-
-        // Toggle advanced view
-        function toggleAdvancedView() {
-            const content = document.getElementById('advanced-view-content');
-            const icon = document.getElementById('advanced-view-icon');
-            const isCollapsed = content.classList.contains('collapsed');
-            
-            if (isCollapsed) {
-                content.classList.remove('collapsed');
-                icon.classList.remove('collapsed');
-                renderAdvancedView();
-            } else {
-                content.classList.add('collapsed');
-                icon.classList.add('collapsed');
-            }
-        }
-
-        // Render advanced view (all proxy groups)
-        async function renderAdvancedView() {
-            try {
-                const groups = await getProxyGroups();
-                const container = document.getElementById('proxy-groups');
-                
-                // Filter out non-group proxies
-                const groupNames = Object.keys(groups).filter(name => {
-                    const type = groups[name].type;
-                    return type === 'Selector' || type === 'URLTest' || type === 'LoadBalance' || type === 'Fallback';
-                });
-
-                if (groupNames.length === 0) {
-                    container.innerHTML = '<div style="color: #888; text-align: center;">No proxy groups found</div>';
-                    return;
-                }
-
-                container.innerHTML = groupNames.map(groupName => {
-                    const group = groups[groupName];
-                    const allProxies = group.all || [];
-                    
-                    return `
-                        <div class="proxy-group" data-group-name="${encodeURIComponent(groupName)}">
-                            <div class="proxy-group-header">
-                                <div>
-                                    <div class="proxy-group-name">${groupName}</div>
-                                    <div class="proxy-group-type">${group.type} | Current: ${group.now || 'N/A'}</div>
-                                </div>
-                                <button class="small" onclick="testGroupLatency('${groupName.replace(/'/g, "\\'")}')">🧪 Test</button>
-                            </div>
-                            <div class="proxy-list">
-                                ${allProxies.map(proxyName => {
-                                    const cached = latencyCache[proxyName];
-                                    const latencyText = cached ? (cached.delay === 'Error' ? 'Error' : `${cached.delay}ms`) : '-';
-                                    const latencyClass = cached ? cached.class : '';
-                                    return `
-                                    <div class="proxy-item ${group.now === proxyName ? 'selected' : ''}" data-proxy="${encodeURIComponent(proxyName)}">
-                                        <span class="proxy-name">${proxyName}</span>
-                                        <span class="proxy-latency ${latencyClass}" data-latency-for="${encodeURIComponent(proxyName)}">${latencyText}</span>
-                                        <button class="small" onclick="testSingleProxyLatency('${proxyName.replace(/'/g, "\\'")}')">Test</button>
-                                    </div>
-                                `}).join('')}
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-
-            } catch (error) {
-                document.getElementById('proxy-groups').innerHTML = `
-                    <div style="color: #e94560; text-align: center;">
-                        ❌ Error loading proxy groups: ${error.message}
-                    </div>
-                `;
-            }
-        }
-
-        // Test a single proxy in advanced view and update its display
-        async function testSingleProxyLatency(proxyName) {
-            const badge = document.querySelector(`#proxy-groups [data-latency-for="${encodeURIComponent(proxyName)}"]`);
-            
-            if (badge) {
-                badge.textContent = 'Testing...';
-                badge.className = 'proxy-latency testing';
-            }
-            
-            try {
-                const encodedName = encodeURIComponent(proxyName);
-                const result = await fetchAPI(`/proxies/${encodedName}/delay?url=http://www.gstatic.com/generate_204&timeout=5000`);
-                
-                const delay = result.delay;
-                let latencyClass = 'good';
-                if (delay > 300) latencyClass = 'medium';
-                if (delay > 800) latencyClass = 'bad';
-                
-                latencyCache[proxyName] = { delay, class: latencyClass };
-                
-                if (badge) {
-                    badge.textContent = `${delay}ms`;
-                    badge.className = `proxy-latency ${latencyClass}`;
-                }
-            } catch (error) {
-                latencyCache[proxyName] = { delay: 'Error', class: 'bad' };
-                if (badge) {
-                    badge.textContent = 'Error';
-                    badge.className = 'proxy-latency bad';
-                }
-            }
-        }
-
-        // Test all proxies in a group (for advanced view)
-        async function testGroupLatency(groupName) {
-            const groups = await getProxyGroups();
-            const group = groups[groupName];
-            if (!group || !group.all) return;
-
-            const container = document.getElementById('proxy-groups');
-            
-            // Set all to testing state
-            const groupEls = container.querySelectorAll('.proxy-group');
-            let groupEl = null;
-            for (const el of groupEls) {
-                if (decodeURIComponent(el.getAttribute('data-group-name')) === groupName) {
-                    groupEl = el;
-                    break;
-                }
-            }
-            
-            if (groupEl) {
-                const latencyEls = groupEl.querySelectorAll('.proxy-latency');
-                latencyEls.forEach(el => {
-                    el.textContent = 'Testing...';
-                    el.className = 'proxy-latency testing';
-                });
-            }
-
-            // Test each proxy sequentially
-            for (const proxyName of group.all) {
-                await testSingleProxyLatency(proxyName);
-                await new Promise(r => setTimeout(r, 100));
-            }
-        }
-
-        // Test all proxies in all groups (for advanced view)
-        async function testAllLatency() {
-            const btn = document.querySelector('#advanced-view-content .test-all-btn');
-            btn.disabled = true;
-            btn.textContent = 'Testing...';
-            isTestingLatency = true;
-
-            try {
-                const groups = await getProxyGroups();
-                const groupNames = Object.keys(groups).filter(name => 
-                    groups[name].type === 'Selector' || groups[name].type === 'URLTest' || groups[name].type === 'LoadBalance'
-                );
-
-                for (const groupName of groupNames) {
-                    await testGroupLatency(groupName);
-                }
-
-                showMessage('proxies-message', '✅ All latency tests completed');
-            } catch (error) {
-                showMessage('proxies-message', `❌ Error: ${error.message}`, true);
-            } finally {
-                isTestingLatency = false;
-                btn.disabled = false;
-                btn.textContent = '🚀 Test All Latency';
-            }
-        }
 
         // Debug Tool Functions
         function toggleDebugTool() {
@@ -2327,6 +2201,44 @@
             } else {
                 content.classList.add('collapsed');
                 icon.classList.add('collapsed');
+            }
+        }
+
+        // Copy debug output to clipboard
+        async function copyDebugOutput() {
+            const outputDiv = document.getElementById('debug-output');
+            const jsonPre = outputDiv.querySelector('.debug-json');
+            const copyBtn = outputDiv.querySelector('.debug-copy-btn');
+            
+            // Get the raw text content (without HTML tags)
+            const text = jsonPre.textContent;
+            
+            try {
+                await navigator.clipboard.writeText(text);
+                copyBtn.textContent = '✅ Copied!';
+                copyBtn.classList.add('copied');
+                
+                setTimeout(() => {
+                    copyBtn.textContent = '📋 Copy';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            } catch (err) {
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                
+                copyBtn.textContent = '✅ Copied!';
+                copyBtn.classList.add('copied');
+                setTimeout(() => {
+                    copyBtn.textContent = '📋 Copy';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
             }
         }
 
@@ -2346,6 +2258,8 @@
 
         // Fetch debug data from API
         async function fetchDebugData(type) {
+            event.preventDefault();
+            const scrollPos = window.scrollY;
             const outputDiv = document.getElementById('debug-output');
             const jsonPre = outputDiv.querySelector('.debug-json');
             const buttons = document.querySelectorAll('.debug-btn');
@@ -2355,6 +2269,7 @@
             event.target.classList.add('active');
             
             outputDiv.classList.add('visible');
+            window.scrollTo(0, scrollPos);
             jsonPre.innerHTML = '<span style="color: #888;">Loading...</span>';
             
             try {
@@ -2378,6 +2293,8 @@
 
         // Check current proxy chain by tracing through nested proxies
         async function checkCurrentChain() {
+            event.preventDefault();
+            const scrollPos = window.scrollY;
             const outputDiv = document.getElementById('debug-output');
             const jsonPre = outputDiv.querySelector('.debug-json');
             const buttons = document.querySelectorAll('.debug-btn');
@@ -2387,6 +2304,7 @@
             event.target.classList.add('active');
             
             outputDiv.classList.add('visible');
+            window.scrollTo(0, scrollPos);
             jsonPre.innerHTML = '<span style="color: #888;">Tracing proxy chain...</span>';
             
             try {
