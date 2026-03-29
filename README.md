@@ -218,6 +218,26 @@ MIT License - feel free to use and modify.
 - [MetaCubeX](https://github.com/MetaCubeX) - Official mihomo organization
 - [Clash](https://github.com/Dreamacro/clash) - Original Clash proxy
 
+## Changelog
+
+### 2026-03-28 - Proxy Group Selection & Subgroup Expansion Fixes
+
+**Fixed Issues:**
+
+1. **Non-Selector Group Manual Selection** - URLTest/Fallback/LoadBalance groups now show a warning when users try to manually select nodes, as only Selector groups support manual selection.
+
+2. **Subgroup Expansion** - Fixed nested proxy groups (subgroups) not expanding correctly:
+   - Fixed `groupId` generation to be stable across re-renders (removed `indent` suffix)
+   - Fixed `expandedGroups` state saving to include both `.proxy-tree-children` and `.proxy-tree-subgroup-children`
+   - Fixed CSS `max-height: 350px` and `overflow-y: auto` on parent containers that were clipping subgroup content
+   - Added `hasChildren` check to hide toggle button for empty groups
+   - Added null check to skip proxies not found in `allProxies`
+
+**Technical Details:**
+- `groupId` now uses consistent format: `sub_${encodeURIComponent(groupName).replace(/%/g, '_')}`
+- Removed `max-height` restriction on `.proxy-tree-children` to allow natural expansion
+- Subgroup children now render with proper `display: flex` layout
+
 ## Contributing
 
 Contributions welcome! This is a simple single-file dashboard, keep it lightweight.

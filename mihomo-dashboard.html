@@ -102,12 +102,29 @@
         .message.success {
             background: #00d4aa33;
             border: 1px solid #00d4aa;
-            display: block;
+            display: block !important;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            padding: 12px 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
         .message.error {
             background: #e9456033;
             border: 1px solid #e94560;
-            display: block;
+            color: #e94560;
+            display: block !important;
+            font-weight: bold;
+            text-align: center;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            padding: 12px 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
         .connections {
             max-height: 300px;
@@ -445,8 +462,6 @@
             display: flex;
             flex-direction: column;
             gap: 4px;
-            max-height: 350px;
-            overflow-y: auto;
         }
         .proxy-tree-children.collapsed {
             display: none;
@@ -457,13 +472,14 @@
             background: rgba(26, 58, 92, 0.5);
             border-radius: 6px;
             border: 1px solid #1a4a6c;
-            margin-left: 12px;
-            overflow: hidden;
+            margin: 4px 0 4px 12px;
+            min-height: 40px;
         }
         .proxy-tree-subgroup-row {
             display: flex;
             align-items: stretch;
             background: rgba(0, 0, 0, 0.15);
+            min-height: 40px;
         }
         .proxy-tree-subgroup-header {
             flex: 1;
@@ -475,6 +491,8 @@
             background: rgba(0, 0, 0, 0.15);
             cursor: pointer;
             transition: all 0.2s;
+            min-height: 40px;
+            box-sizing: border-box;
         }
         .proxy-tree-subgroup-header:hover {
             background: rgba(100, 150, 255, 0.1);
@@ -495,6 +513,14 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+        }
+        .proxy-tree-subgroup-type {
+            font-size: 9px;
+            color: #888;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 120px;
         }
         .proxy-tree-subgroup-select {
             background: transparent;
@@ -1520,10 +1546,23 @@
                 // If inside a group, select within that group; otherwise select globally
                 const targetGroup = parentGroupName || 'GLOBAL';
                 
+                // Check if parent group supports manual selection (only Selector supports it)
+                const parentProxy = parentGroupName ? allProxies[parentGroupName] : null;
+                const parentType = parentProxy?.type;
+                const isManualSelectable = !parentGroupName || parentType === 'Selector';
+                
+                // Build onclick handler
+                let onclickHandler;
+                if (isManualSelectable) {
+                    onclickHandler = `setProxy('${proxyName.replace(/'/g, "\\'")}', '${targetGroup.replace(/'/g, "\\'")}')`;
+                } else {
+                    onclickHandler = `event.stopPropagation(); showMessage('proxy-message', 'Only Selector groups support manual selection', true);`;
+                }
+                
                 return `
                     <div class="proxy-tree-leaf ${isActive ? 'selected' : ''}" style="${marginStyle}" data-proxy-name="${encodeURIComponent(proxyName)}">
                         <span class="proxy-tree-leaf-icon">${display.emoji}</span>
-                        <span class="proxy-tree-leaf-name" onclick="setProxy('${proxyName.replace(/'/g, "\\'")}', '${targetGroup.replace(/'/g, "\\'")}')" title="${display.label}">${display.label}</span>
+                        <span class="proxy-tree-leaf-name" onclick="${onclickHandler}" title="${display.label}">${display.label}</span>
                         <span class="proxy-tree-leaf-type">${type}</span>
                         <span class="proxy-tree-leaf-latency ${latency.class}" data-latency-for="${encodeURIComponent(proxyName)}">${latency.text}</span>
                         <button class="proxy-tree-leaf-test" onclick="testSingleProxySelectionLatency('${proxyName.replace(/'/g, "\\'")}')" data-test-for="${encodeURIComponent(proxyName)}">🧪 Test</button>
@@ -1532,12 +1571,23 @@
             };
             
             // Render a sub-group (nested proxy group) - COLLAPSED by default
-            const renderSubGroup = (groupName, indent = 0) => {
+            const renderSubGroup = (groupName, indent = 0, parentGroupName = null) => {
                 const display = getProxyDisplayInfo(groupName);
-                const isActive = globalProxy.now === groupName;
+                // Check if this group is selected by its parent
+                let isActive = false;
+                if (parentGroupName) {
+                    const parentProxy = allProxies[parentGroupName];
+                    isActive = parentProxy && parentProxy.now === groupName;
+                    // Debug - log all subgroups with parent info
+                    console.log('DEBUG renderSubGroup:', groupName, 'parent:', parentGroupName, 
+                        'parent.now:', parentProxy?.now, 'isActive:', isActive, 
+                        'globalProxy.now:', globalProxy?.now);
+                } else {
+                    isActive = globalProxy.now === groupName;
+                }
                 const proxy = allProxies[groupName];
                 const children = getGroupChildren(groupName);
-                const groupId = 'sub_' + encodeURIComponent(groupName).replace(/%/g, '_') + '_' + indent;
+                const groupId = 'sub_' + encodeURIComponent(groupName).replace(/%/g, '_');
                 const marginStyle = indent > 0 ? `margin-left: ${8 + indent * 6}px;` : '';
                 
                 // Get latency for group's selected proxy (now)
@@ -1545,11 +1595,13 @@
                 const nowProxyDelay = nowProxyName ? getProxyDelay(nowProxyName) : null;
                 const nowLatency = nowProxyName ? getLatencyDisplayInfo(nowProxyName, nowProxyDelay) : { text: '-', class: '' };
                 
-                // Recursively render children
+                    // Recursively render children
                 let childrenHtml = '';
                 for (const childName of children) {
+                    // Skip if proxy data not found
+                    if (!allProxies[childName]) continue;
                     if (isGroup(childName)) {
-                        childrenHtml += renderSubGroup(childName, indent + 1);
+                        childrenHtml += renderSubGroup(childName, indent + 1, groupName);
                     } else {
                         childrenHtml += renderLeafProxy(childName, indent + 1, groupName);
                     }
@@ -1561,22 +1613,24 @@
                 const arrow = isExpanded ? '▼' : '▶';
                 
                 const globalIndicator = isActive ? ' 🟢' : '';
+                const hasChildren = children.length > 0;
+                
+                // Determine target group for selection
+                const targetGroup = parentGroupName || 'GLOBAL';
                 
                 return `
                     <div class="proxy-tree-subgroup" style="${marginStyle}">
                         <div class="proxy-tree-subgroup-row">
-                            <span class="proxy-tree-toggle ${toggleState}" id="proxy-tree-toggle-${groupId}" data-group-id="${groupId}"><span class="proxy-tree-toggle-icon">${arrow}</span></span>
-                            <div class="proxy-tree-subgroup-header ${isActive ? 'selected' : ''}" data-proxy-name="${encodeURIComponent(groupName)}" onclick="setProxy('${groupName.replace(/'/g, "\\'")}')">
+                            ${hasChildren ? `<span class="proxy-tree-toggle ${toggleState}" id="proxy-tree-toggle-${groupId}" data-group-id="${groupId}"><span class="proxy-tree-toggle-icon">${arrow}</span></span>` : '<span style="width: 36px; flex-shrink: 0;"></span>'}
+                            <div class="proxy-tree-subgroup-header ${isActive ? 'selected' : ''}" data-proxy-name="${encodeURIComponent(groupName)}" onclick="setProxy('${groupName.replace(/'/g, "\\'")}', '${targetGroup.replace(/'/g, "\\'")}')">
                                 <span class="proxy-tree-subgroup-icon">📁</span>
                                 <span class="proxy-tree-subgroup-name" title="${display.label}">${display.emoji} ${display.label}${globalIndicator}</span>
-                                <span style="font-size: 9px; color: #888; white-space: nowrap;">${proxy?.type || 'Group'} → ${nowProxyName || 'None'}</span>
+                                <span class="proxy-tree-subgroup-type">${proxy?.type || 'Group'} → ${nowProxyName || 'None'}</span>
                                 <span class="proxy-tree-leaf-latency ${nowLatency.class}" style="margin-right: 4px;" title="Latency of selected proxy: ${nowProxyName || 'None'}" data-latency-for="${encodeURIComponent(groupName)}">${nowLatency.text}</span>
                                 <button class="proxy-tree-group-test" onclick="event.stopPropagation(); testGroupLatency('${groupName.replace(/'/g, "\\'")}')" data-test-for="${encodeURIComponent(groupName)}">🧪 Test</button>
                             </div>
                         </div>
-                        <div class="proxy-tree-subgroup-children ${contentState}" id="proxy-tree-children-${groupId}">
-                            ${childrenHtml}
-                        </div>
+                        ${hasChildren ? `<div class="proxy-tree-subgroup-children ${contentState}" id="proxy-tree-children-${groupId}">${childrenHtml}</div>` : ''}
                     </div>
                 `;
             };
@@ -1597,8 +1651,10 @@
                 // Render children
                 let childrenHtml = '';
                 for (const childName of children) {
+                    // Skip if proxy data not found
+                    if (!allProxies[childName]) continue;
                     if (isGroup(childName)) {
-                        childrenHtml += renderSubGroup(childName);
+                        childrenHtml += renderSubGroup(childName, 0, groupName);
                     } else {
                         childrenHtml += renderLeafProxy(childName, 0, groupName);
                     }
@@ -2115,7 +2171,7 @@
 
                 // Save expanded state before re-rendering
                 const expandedGroups = new Set();
-                document.querySelectorAll('.proxy-tree-children:not(.collapsed)').forEach(el => {
+                document.querySelectorAll('.proxy-tree-children:not(.collapsed), .proxy-tree-subgroup-children:not(.collapsed)').forEach(el => {
                     const groupId = el.id.replace('proxy-tree-children-', '');
                     if (groupId) expandedGroups.add(groupId);
                 });
@@ -2373,6 +2429,42 @@
                 jsonPre.innerHTML = '<span style="color: #e94560;">Error: ' + error.message + '</span>';
             }
         }
+
+        // Debug function to check group state - can be called from console
+        window.debugGroupState = function(groupName) {
+            console.log('=== Debug Group State ===');
+            console.log('globalProxy:', globalProxy);
+            console.log('allProxies keys:', Object.keys(allProxies));
+            
+            if (groupName) {
+                console.log(`\n--- ${groupName} ---`);
+                console.log('proxy data:', allProxies[groupName]);
+                console.log('isGroup:', isGroup(groupName));
+                
+                // Check if it's a child of any group
+                for (const [parentName, parentData] of Object.entries(allProxies)) {
+                    if (parentData.all && parentData.all.includes(groupName)) {
+                        console.log(`Found as child of: ${parentName}`);
+                        console.log(`  Parent type: ${parentData.type}`);
+                        console.log(`  Parent now: ${parentData.now}`);
+                        console.log(`  Is selected by parent: ${parentData.now === groupName}`);
+                    }
+                }
+            } else {
+                // Show all groups and their 'now' values
+                console.log('\n--- All Groups ---');
+                Object.entries(allProxies).forEach(([name, data]) => {
+                    if (isGroup(name)) {
+                        console.log(`${name}: type=${data.type}, now=${data.now}`);
+                    }
+                });
+            }
+            
+            console.log('\n--- GLOBAL Selection ---');
+            console.log('globalProxy.now:', globalProxy?.now);
+            
+            return 'Debug complete - check console output above';
+        };
 
         // Initial load - wait for DOM to be ready
         document.addEventListener('DOMContentLoaded', function() {
